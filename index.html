@@ -16,7 +16,7 @@
   <meta name="text:Colophon" content="Ashley theme by Jxnblk" />
   <meta name="text:GoogleWebFont" content="Gentium Book Basic" />
   <title>El Blog De Ale Pan</title>
-  <meta name="description" content="{MetaDescription}">
+  <meta name="description" content="después no digas que no te avisé">
   <link rel="shortcut icon" href="{Favicon}">
   <link rel="apple-touch-icon" href="{PortraitURL-128}">
   <link rel="alternate" type="application/rss+xml" href="{RSS}">
@@ -42,6 +42,53 @@
   <div class="content wrap">
     <section class="posts">
       <!-- {block:Posts} -->
+      <article class="post {PostType}">
+        <a href="{Permalink}" class="post-title">
+          <h2>Un Reloj de Sol, caserito caserito</h2>
+        </a>
+            <img src="public/retrato reloj.jpg" alt="retrato con reloj de sol">
+        <p> Se lleva un registro de las transacciones (cómo lo hacen en un banco)
+          Las transacciones se agrupan en bloques
+          Como saber cual es el registro verdadero?
+          La cadena más larga de transacciones es la verdadera. Por que? Agregar cada bloque es trabajoso y la cadena
+          mas larga se
+          logra trabajando entre todos. Entonces producir una cadena más larga con transacciones diferentes es muy
+          difícil. La
+          cadena de transacciones que está ahora es el trabajo colectivo acumulado por mucho tiempo.
+          Por qué cuesta tanto agregar un bloque?
+          A propósito. Hay que encontrar una clave, un número justi para cada bloque. Y eso se hace con prueba y error.
+        </p>
+
+        <a href="{Permalink}" class="p">Continuar Leyendo &raquo;</a>
+
+        <!-- {block:Date} -->
+        <footer>
+          <ul class="small">
+            <li><a href="{Permalink}"
+                title="{DayOfWeek}, {DayOfMonth} {Month} {Year}, {24Hour}:{Minutes}:{Seconds}">Hace un día</a></li>
+            <!-- {block:ContentSource} -->
+            <li class="source">via <a href="https://simple-coin.herokuapp.com">Simple Coin</a></li>
+            <!-- {/block:ContentSource} -->
+          </ul>
+
+          <!-- {block:PermalinkPage}
+                    {block:HasTags} -->
+          <ul class="tags">
+            <!-- {block:Tags} -->
+            <li>
+              <a href="{TagURL}">#cripto</a>
+            </li>
+            <li>
+              <a href="{TagURL}">#auditable</a>
+            </li>
+            <!-- {/block:Tags} -->
+          </ul>
+          <!-- {/block:HasTags}
+								{/block:PermalinkPage} -->
+
+        </footer>
+        <!-- {/block:Date} -->
+      </article> <!-- /post -->
       <article class="post {PostType}">
         <a href="{Permalink}" class="post-title">
           <h2>El Simple Coin</h2>
