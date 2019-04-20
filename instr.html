@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+</head>
+
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
+<script>
+    var synth = new Tone.Synth().toMaster()
+    synth.triggerAttackRelease('C4', '8n')
+
+    let accelerometer = new Accelerometer({ frequency: 60 });
+
+        accelerometer.addEventListener('reading', e => {
+            console.log("Acceleration along the X-axis " + accelerometer.x);
+            console.log("Acceleration along the Y-axis " + accelerometer.y);
+            console.log("Acceleration along the Z-axis " + accelerometer.z);
+        });
+    accelerometer.start();
+
+
+</script>
+    <h1>My First Heading</h1>
+    <p>My first paragraph.</p>
+
+</body>
+
+</html>
