@@ -30,7 +30,7 @@
     var valor = document.getElementById('valor')
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        autoWah.Q.value = accelerometer.x * 10
+        autoWah.Q.value = accelerometer.x * 50
         valor.innerHTML = "Acceleration along the X-axis " + accelerometer.x
         console.log("Acceleration along the X-axis " + accelerometer.x);
         console.log("Acceleration along the Y-axis " + accelerometer.y);
