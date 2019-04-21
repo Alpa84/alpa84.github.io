@@ -7,6 +7,10 @@
 
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
+
+    <button onclick="sonar()">Sonar</button>
+    <h1>My First Heading</h1>
+    <p id='valor'>My first paragraph.</p>
 <script>
     var synth = new Tone.Synth().toMaster()
     var autoWah = new Tone.AutoWah(50, 6, -30).toMaster();
@@ -23,22 +27,19 @@
         // }, 500);
     }
 
-
+    var valor = document.getElementById('valor')
     let accelerometer = new Accelerometer({ frequency: 60 });
-        accelerometer.addEventListener('reading', e => {
-            autoWah.Q.value = accelerometer.x
-            console.log("Acceleration along the X-axis " + accelerometer.x);
-            console.log("Acceleration along the Y-axis " + accelerometer.y);
-            console.log("Acceleration along the Z-axis " + accelerometer.z);
-        });
+    accelerometer.addEventListener('reading', e => {
+        autoWah.Q.value = accelerometer.x
+        valor.innerHTML = "Acceleration along the X-axis " + accelerometer.x
+        console.log("Acceleration along the X-axis " + accelerometer.x);
+        console.log("Acceleration along the Y-axis " + accelerometer.y);
+        console.log("Acceleration along the Z-axis " + accelerometer.z);
+    });
     accelerometer.start();
 
 
 </script>
-    <button onclick="sonar()">Sonar</button>
-    <h1>My First Heading</h1>
-    <p>My first paragraph.</p>
-
 </body>
 
 </html>
