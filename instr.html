@@ -13,24 +13,22 @@
     <p id='valor'>My first paragraph.</p>
 <script>
     var synth = new Tone.Synth().toMaster()
-    var autoWah = new Tone.AutoWah(50, 6, -30).toMaster();
     //initialize the synth and connect to autowah
-    var synth = synth.connect(autoWah);
     //Q value influences the effect of the wah - default is 2
-    autoWah.Q.value = 6;
+
     //more audible on higher notes
 
     const sonar = () => {
         synth.triggerAttack("C6")
         // setTimeout(() => {
-        //     autoWah.Q.value = 20
+        //     synth.detune.value = 300
         // }, 500);
     }
 
     var valor = document.getElementById('valor')
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        autoWah.Q.value = accelerometer.x * 50
+        synth.detune.value = accelerometer.x * 20
         valor.innerHTML = "Acceleration along the X-axis " + accelerometer.x
         console.log("Acceleration along the X-axis " + accelerometer.x);
         console.log("Acceleration along the Y-axis " + accelerometer.y);
