@@ -42,7 +42,8 @@
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
 <script>
-    var chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
+    var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(chorus)
+    var wah = new Tone.Filter(300, 'bandpass').toMaster()
     var mapping = {
         'target1': {
             note: 'A3',
@@ -168,7 +169,7 @@
         var place = mapping[ev.target.id]
         var detune = place.started - ev.targetTouches[0].clientX
         console.log(ev.target.id)
-        place.synth.detune.value = detune
+        place.synth.detune.value = detune * 4
 
         ev.preventDefault();
         if (logEvents) log("touchMove", ev, false);
@@ -212,7 +213,7 @@
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        chorus.frequency.value = accelerometer.y * 10
+        wah.frequency.value = accelerometer.y * 700 + 300
     })
 
     accelerometer.start()
