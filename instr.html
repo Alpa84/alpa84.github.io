@@ -42,24 +42,28 @@
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
 <script>
+    var chorus = new Tone.Chorus(4, 2.5, 0.5).toMaster()
     var mapping = {
         'target1': {
             note: 'A3',
-            synth: new Tone.Synth().toMaster()
+            synth: new Tone.Synth().connect(chorus),
         },
         'target2': {
             note: 'C4',
-            synth: new Tone.Synth().toMaster()
+            synth: new Tone.Synth().connect(chorus)
         },
         'target3': {
             note: 'D4',
-            synth: new Tone.Synth().toMaster()
+            synth: new Tone.Synth().connect(chorus)
         },
         'target4': {
             note: 'E4',
-            synth: new Tone.Synth().toMaster()
+            synth: new Tone.Synth().connect(chorus)
         },
     }
+
+
+    var filter = new Tone.Filter(200, "bandpass")
     // Log events flag
     var logEvents = false;
     // Touch Point cache
@@ -91,8 +95,11 @@
         //   yellow - one tap (or hold)
         //   pink - two taps
         //   lightblue - more than two taps
-        var id = ev.target.id
-        mapping[id].synth.triggerAttack(mapping[id].note)
+        var place = mapping[ev.target.id]
+        place.started = ev.targetTouches[0].clientX
+        console.log(place.started)
+        place.synth.triggerAttack(place.note)
+
 
         switch (ev.targetTouches.length) {
             case 1:
@@ -142,11 +149,11 @@
         // of two, and so on.
         ev.preventDefault();
         // Cache the touch points for later processing of 2-touch pinch/zoom
-        if (ev.targetTouches.length == 2) {
+        // if (ev.targetTouches.length == 2) {
             for (var i = 0; i < ev.targetTouches.length; i++) {
                 tpCache.push(ev.targetTouches[i]);
             }
-        }
+        // }
         if (logEvents) log("touchStart", ev, true);
         startNote(ev);
     }
@@ -158,6 +165,11 @@
         // This function sets the target element's border to "dashed" to visualy
         // indicate the target received a move event.
         //
+        var place = mapping[ev.target.id]
+        var detune = place.started - ev.targetTouches[0].clientX
+        console.log(ev.target.id)
+        place.synth.detune.value = detune
+
         ev.preventDefault();
         if (logEvents) log("touchMove", ev, false);
         // To avoid too much color flashing many touchmove events are started,
@@ -171,8 +183,9 @@
         handle_pinch_zoom(ev);
     }
     function end_handler(ev) {
-        var id = ev.target.id
-        mapping[id].synth.triggerRelease()
+        var place = mapping[ev.target.id]
+        place.synth.triggerRelease()
+        place.synth.detune.value = 0
         ev.preventDefault();
         if (logEvents) log(ev.type, ev, false);
         if (ev.targetTouches.length == 0) {
@@ -196,6 +209,13 @@
         set_handlers("target3");
         set_handlers("target4");
     }
+
+    let accelerometer = new Accelerometer({ frequency: 60 });
+    accelerometer.addEventListener('reading', e => {
+        chorus.frequency.value = accelerometer.y * 10
+    })
+
+    accelerometer.start()
 </script>
 
 <body onload="init();">
