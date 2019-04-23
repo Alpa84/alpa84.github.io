@@ -185,7 +185,7 @@
         var place = mapping[ev.target.id]
         var detune = place.started - ev.targetTouches[0].clientX
         console.log(ev.target.id)
-        place.synth.detune.value = detune * 2
+        place.synth.detune.value = detune
 
         ev.preventDefault();
         if (logEvents) log("touchMove", ev, false);
