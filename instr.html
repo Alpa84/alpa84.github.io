@@ -42,8 +42,8 @@
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
 <script>
-    var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(chorus)
     var wah = new Tone.Filter(300, 'bandpass').toMaster()
+    var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
     var mapping = {
         'target1': {
             note: 'A3',
