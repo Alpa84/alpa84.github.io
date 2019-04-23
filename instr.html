@@ -231,7 +231,7 @@
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        wah.frequency.value = (accelerometer.y + 1) / 2  * 700 + 300
+        wah.frequency.value = (accelerometer.y + 10) / 2  * 700 + 300
     })
 
     accelerometer.start()
