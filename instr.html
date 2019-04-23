@@ -38,6 +38,14 @@
             background: white;
             border: 1px solid black;
         }
+        #target5 {
+            background: white;
+            border: 1px solid black;
+        }
+        #target6 {
+            background: white;
+            border: 1px solid black;
+        }
     </style>
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
@@ -59,6 +67,14 @@
         },
         'target4': {
             note: 'E4',
+            synth: new Tone.Synth().connect(chorus)
+        },
+        'target5': {
+            note: 'G4',
+            synth: new Tone.Synth().connect(chorus)
+        },
+        'target6': {
+            note: 'A4',
             synth: new Tone.Synth().connect(chorus)
         },
     }
@@ -209,6 +225,8 @@
         set_handlers("target2");
         set_handlers("target3");
         set_handlers("target4");
+        set_handlers("target5");
+        set_handlers("target6");
     }
 
     let accelerometer = new Accelerometer({ frequency: 60 });
@@ -226,6 +244,8 @@
     <div id="target2"> Tap, Hold or Swipe me 2</div>
     <div id="target3"> Tap, Hold or Swipe me 3</div>
     <div id="target4"> Tap, Hold or Swipe me 4</div>
+    <div id="target5"> Tap, Hold or Swipe me 3</div>
+    <div id="target6"> Tap, Hold or Swipe me 4</div>
 
     <!-- UI for logging/debugging -->
     <button id="log" onclick="enableLog(event);">Start/Stop event logging</button>
