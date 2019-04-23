@@ -113,6 +113,7 @@
         //   pink - two taps
         //   lightblue - more than two taps
         var place = mapping[ev.target.id]
+        place.synth.detune.value = 0
         place.started = ev.targetTouches[0].clientX
         console.log(place.started)
         place.synth.triggerAttack(place.note)
@@ -184,7 +185,6 @@
         //
         var place = mapping[ev.target.id]
         var detune = place.started - ev.targetTouches[0].clientX
-        console.log(ev.target.id)
         place.synth.detune.value = detune
 
         ev.preventDefault();
@@ -202,7 +202,6 @@
     function end_handler(ev) {
         var place = mapping[ev.target.id]
         place.synth.triggerRelease()
-        place.synth.detune.value = 0
         ev.preventDefault();
         if (logEvents) log(ev.type, ev, false);
         if (ev.targetTouches.length == 0) {
