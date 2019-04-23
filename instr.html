@@ -185,7 +185,7 @@
         var place = mapping[ev.target.id]
         var detune = place.started - ev.targetTouches[0].clientX
         console.log(ev.target.id)
-        place.synth.detune.value = detune * 4
+        place.synth.detune.value = detune * 2
 
         ev.preventDefault();
         if (logEvents) log("touchMove", ev, false);
@@ -231,7 +231,7 @@
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        wah.frequency.value = (accelerometer.y + 10) / 2  * 700 + 300
+        wah.frequency.value = (accelerometer.y + 5) / 2  * 700 + 300
     })
 
     accelerometer.start()
@@ -240,12 +240,12 @@
 <body onload="init();">
     <h1>Multi-touch interaction</h1>
     <!-- Create some boxes to test various gestures. -->
-    <div id="target1"> Tap, Hold or Swipe me 1</div>
-    <div id="target2"> Tap, Hold or Swipe me 2</div>
-    <div id="target3"> Tap, Hold or Swipe me 3</div>
-    <div id="target4"> Tap, Hold or Swipe me 4</div>
-    <div id="target5"> Tap, Hold or Swipe me 3</div>
-    <div id="target6"> Tap, Hold or Swipe me 4</div>
+    <div id="target1"> A3</div>
+    <div id="target2"> C4</div>
+    <div id="target3"> D4</div>
+    <div id="target4"> E4</div>
+    <div id="target5"> G4</div>
+    <div id="target6"> A4</div>
 
     <!-- UI for logging/debugging -->
     <button id="log" onclick="enableLog(event);">Start/Stop event logging</button>
