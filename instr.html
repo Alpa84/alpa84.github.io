@@ -1,85 +1,48 @@
 <!DOCTYPE html>
 <html lang=en>
-<!--
-  This app demonstrates using the Touch Events touch event types (touchstart,
-  touchmove, touchcancel and touchend) for the following interaction:
-   1. Single touch
-   2. Two (simultaneous) touches
-   3. More than two simultaneous touches
-   4. 1-finger swipe
-   5. 2-finger move/pinch/swipe
--->
 
 <head>
     <title>Touch Events tutorial</title>
     <meta name="viewport" content="width=device-width">
     <style>
+        body {
+            margin: 0em;
+        }
         div {
             margin: 0em;
             padding: 2em;
         }
-
-        #target1 {
-            background: white;
-            border: 1px solid black;
-        }
-
-        #target2 {
-            background: white;
-            border: 1px solid black;
-        }
-
-        #target3 {
-            background: white;
-            border: 1px solid black;
-        }
-
-        #target4 {
-            background: white;
-            border: 1px solid black;
-        }
-        #target5 {
-            background: white;
-            border: 1px solid black;
-        }
-        #target6 {
+        .key {
+            height: calc(100 vh /8);
             background: white;
             border: 1px solid black;
         }
     </style>
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
+<body onload="init();">
+    <div id='container'></div>
 <script>
+    const generateKey = (pitch) => {
+        return {
+            note: pitch,
+            synth: new Tone.Synth({ oscillator: { type: 'sawtooth' } }).connect(chorus),
+        }
+    }
     var wah = new Tone.Filter(300, 'bandpass').toMaster()
     var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
-    var mapping = {
-        'target1': {
-            note: 'A3',
-            synth: new Tone.Synth().connect(chorus),
-        },
-        'target2': {
-            note: 'C4',
-            synth: new Tone.Synth().connect(chorus)
-        },
-        'target3': {
-            note: 'D4',
-            synth: new Tone.Synth().connect(chorus)
-        },
-        'target4': {
-            note: 'E4',
-            synth: new Tone.Synth().connect(chorus)
-        },
-        'target5': {
-            note: 'G4',
-            synth: new Tone.Synth().connect(chorus)
-        },
-        'target6': {
-            note: 'A4',
-            synth: new Tone.Synth().connect(chorus)
-        },
+    var notes = ['A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5']
+    var mapping = {}
+    for (const pitch of notes) {
+        mapping[pitch] = generateKey(pitch)
     }
-
-
+    for (const pitch of notes) {
+        var el = document.createElement('div')
+        el.innerHTML = pitch
+        el.id = pitch
+        el.className = 'key'
+        document.getElementById('container').appendChild(el)
+    }
     var filter = new Tone.Filter(200, "bandpass")
     // Log events flag
     var logEvents = false;
@@ -168,9 +131,9 @@
         ev.preventDefault();
         // Cache the touch points for later processing of 2-touch pinch/zoom
         // if (ev.targetTouches.length == 2) {
-            for (var i = 0; i < ev.targetTouches.length; i++) {
-                tpCache.push(ev.targetTouches[i]);
-            }
+        for (var i = 0; i < ev.targetTouches.length; i++) {
+            tpCache.push(ev.targetTouches[i]);
+        }
         // }
         if (logEvents) log("touchStart", ev, true);
         startNote(ev);
@@ -193,9 +156,9 @@
         // don't update the background if two touch points are active
         if (!(ev.touches.length == 2 && ev.targetTouches.length == 2))
             // update_background(ev);
-        // Set the target element's border to dashed to give a clear visual
-        // indication the element received a move event.
-        ev.target.style.border = "dashed";
+            // Set the target element's border to dashed to give a clear visual
+            // indication the element received a move event.
+            ev.target.style.border = "dashed";
         // Check this event for 2-touch Move/Pinch/Zoom gesture
         handle_pinch_zoom(ev);
     }
@@ -220,73 +183,22 @@
         el.ontouchend = end_handler;
     }
     function init() {
-        set_handlers("target1");
-        set_handlers("target2");
-        set_handlers("target3");
-        set_handlers("target4");
-        set_handlers("target5");
-        set_handlers("target6");
+        for (const pitch of notes) {
+            set_handlers(pitch);
+        }
     }
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        wah.frequency.value = (accelerometer.y + 5) / 2  * 700 + 300
+        for (const key in mapping) {
+            key.detune.rampTo(accelerometer.y * 100, 0.4)
+        }
+        // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
     })
 
     accelerometer.start()
 </script>
-
-<body onload="init();">
-    <h1>Multi-touch interaction</h1>
-    <!-- Create some boxes to test various gestures. -->
-    <div id="target1"> A3</div>
-    <div id="target2"> C4</div>
-    <div id="target3"> D4</div>
-    <div id="target4"> E4</div>
-    <div id="target5"> G4</div>
-    <div id="target6"> A4</div>
-
-    <!-- UI for logging/debugging -->
-    <button id="log" onclick="enableLog(event);">Start/Stop event logging</button>
-    <button id="clearlog" onclick="clearLog(event);">Clear the log</button>
-    <p></p>
-    <output></output>
 </body>
 
 </html>
 
-<!-- <!DOCTYPE html>
-<html>
-
-<head>
-    <title>Page Title</title>
-</head>
-
-<body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
-
-    <button onclick="sonar()">Sonar</button>
-    <h1>My First Heading</h1>
-    <p id='valor'>My first paragraph.</p>
-<script>
-    var synth = new Tone.Synth().toMaster()
-    const sonar = () => {
-        synth.triggerAttack("C6")
-    }
-
-    var valor = document.getElementById('valor')
-    let accelerometer = new Accelerometer({ frequency: 60 });
-    accelerometer.addEventListener('reading', e => {
-        synth.detune.value = accelerometer.x * 20
-        valor.innerHTML = "Acceleration along the X-axis " + accelerometer.x
-        console.log("Acceleration along the X-axis " + accelerometer.x);
-        console.log("Acceleration along the Y-axis " + accelerometer.y);
-        console.log("Acceleration along the Z-axis " + accelerometer.z);
-    });
-    accelerometer.start();
-
-
-</script>
-</body>
-
-</html> -->
