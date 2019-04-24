@@ -191,7 +191,7 @@
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
         for (const key in mapping) {
-            key.detune.rampTo(accelerometer.y * 100, 0.4)
+            key.detune.value(accelerometer.y * 100, 0.4)
         }
         // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
     })
