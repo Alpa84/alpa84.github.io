@@ -133,13 +133,13 @@
             // mapping[key].synth.detune.value = cents
             // mapping[key].synth.detune.rampTo(cents, 0.4)
             // var octaveUp = 900
-            var octaveUp = Tone.frequency(key).toFrequency  * 2
+            var octaveUp = Tone.Frequency(key).toFrequency()  * 2
             mapping[key].synth.frequency.rampTo(octaveUp, 0.4)
         }
     }
-    // setInterval(() => {
-    //     detuneKeys(100)
-    // }, 2000);
+    setInterval(() => {
+        detuneKeys(100)
+    }, 2000);
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     var reading = document.getElementById('reading')
