@@ -187,12 +187,17 @@
             set_handlers(pitch);
         }
     }
-
+    const detuneKeys = (cents) =>{
+        for (const key in mapping) {
+            mapping[key].synth.frequency.rampTo(cents, 0.4)
+        }
+    }
+    // setInterval(() => {
+    //     detuneKeys(100)
+    // }, 2000);
     let accelerometer = new Accelerometer({ frequency: 60 });
     accelerometer.addEventListener('reading', e => {
-        for (const key in mapping) {
-            key.detune.value(accelerometer.y * 1000, 0.4)
-        }
+            detuneKeys(accelerometer.y * 1000)
         // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
     })
 
