@@ -13,7 +13,7 @@
             padding: 2em;
         }
         .key {
-            height: calc(100 vh /8);
+            /* max-height: 2%; */
             background: white;
             border: 1px solid black;
         }
@@ -21,22 +21,31 @@
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
 <body onload="init();">
-    <span id='reading'></span>
+    <div id='reading'></div>
+    whami <input type="checkbox" id="whami" onclick="toggleWhami()">
     <div id='container'></div>
 <script>
+    var whamiOn = false
+    const toggleWhami = () =>{
+        whamiOn = !whamiOn
+    }
     const generateKey = (pitch) => {
         var vibrato = new Tone.Vibrato().connect(chorus)
         return {
             note: pitch,
-            synth: new Tone.Synth({ oscillator: { type: 'sawtooth' } }).connect(vibrato),
+            synth: new Tone.Synth({
+                oscillator: { type: 'sawtooth' },
+                envelope: { attack: 0.5, decay: 0}
+             }).connect(vibrato),
             vibrato: vibrato
         }
     }
 
-    var wah = new Tone.Filter(300, 'bandpass').toMaster()
+    var delay = new Tone.FeedbackDelay('8n', 0.3).toMaster()
+    var wah = new Tone.Filter(300, 'bandpass', -24).connect(delay)
     var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
 
-    var notes = ['A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5']
+    var notes = ['A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5'].reverse()
     var mapping = {}
     for (const pitch of notes) {
         mapping[pitch] = generateKey(pitch)
@@ -54,7 +63,8 @@
 
         var place = mapping[ev.target.id]
         place.synth.detune.value = 0
-        place.started = ev.targetTouches[0].clientX
+        place.startedX = ev.targetTouches[0].clientX
+        place.startedY = ev.targetTouches[0].clientY
         place.synth.triggerAttack(place.note)
 
 
@@ -97,11 +107,17 @@
         // indicate the target received a move event.
         //
         var place = mapping[ev.target.id]
-        var detune = place.started - ev.targetTouches[0].clientX
-        // place.synth.detune.value = detune
-        if(!isNaN(detune)){
-            place.vibrato.frequency.value = detune * 5 * 0.009
-            place.vibrato.depth.value = detune * 0.1  * 0.009
+        var vibrate = place.startedX - ev.targetTouches[0].clientX
+        var detune = place.startedY - ev.targetTouches[0].clientY
+        // place.synth.vibrate.value = vibrate
+        if(!isNaN(vibrate)){
+            place.vibrato.frequency.value = vibrate * 5 * 0.009 * 2
+            place.vibrato.depth.value = vibrate * 0.1  * 0.009 * 2
+            if (whamiOn) {
+
+            } else {
+                place.synth.detune.value = detune
+            }
         }
     }
     function end_handler(ev) {
@@ -131,10 +147,9 @@
     const detuneKeys = (cents) =>{
         for (const key in mapping) {
             // mapping[key].synth.detune.value = cents
-            // mapping[key].synth.detune.rampTo(cents, 0.4)
-            // var octaveUp = 900
-            var octaveUp = Tone.Frequency(key).toFrequency()  * 2
-            mapping[key].synth.frequency.rampTo(octaveUp, 0.4)
+            mapping[key].synth.detune.rampTo(cents, 0.4)
+            // var octaveUp = Tone.Frequency(key).toFrequency()  * 2
+            // mapping[key].synth.frequency.rampTo(octaveUp, 0.4)
         }
     }
     // setInterval(() => {
@@ -147,18 +162,22 @@
     accelerometer.addEventListener('reading', e => {
         var sensorMin = 4
         // var sensorMin = 4
-        var sensorMax = 7
+        var sensorMax = 4.2
         var adjusted = (accelerometer.y - sensorMin) / (sensorMax - sensorMin)
         var limited = Math.min(Math.max(adjusted, 0), 1)
         reading.innerHTML = limited
-        if (!up && limited === 1) {
-            up = true
-            detuneKeys(limited * 1200)
+        if (whamiOn) {
+            if (!up && limited === 1) {
+                up = true
+                detuneKeys(limited * 1200)
+            }
+            if (up && limited === 0) {
+                up = false
+                detuneKeys(limited * 1200)
+            }
+        } else {
+            wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
         }
-        if (up && limited === 0) {
-            up = false
-        }
-        // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
     })
 
     accelerometer.start()
