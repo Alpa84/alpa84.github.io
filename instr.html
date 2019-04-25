@@ -21,16 +21,21 @@
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
 <body onload="init();">
+    <span id='reading'></span>
     <div id='container'></div>
 <script>
     const generateKey = (pitch) => {
+        var vibrato = new Tone.Vibrato().connect(chorus)
         return {
             note: pitch,
-            synth: new Tone.Synth({ oscillator: { type: 'sawtooth' } }).connect(chorus),
+            synth: new Tone.Synth({ oscillator: { type: 'sawtooth' } }).connect(vibrato),
+            vibrato: vibrato
         }
     }
+
     var wah = new Tone.Filter(300, 'bandpass').toMaster()
     var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
+
     var notes = ['A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5']
     var mapping = {}
     for (const pitch of notes) {
@@ -44,41 +49,12 @@
         document.getElementById('container').appendChild(el)
     }
     var filter = new Tone.Filter(200, "bandpass")
-    // Log events flag
-    var logEvents = false;
-    // Touch Point cache
     var tpCache = new Array();
-    function enableLog(ev) {
-        logEvents = logEvents ? false : true;
-    }
-    function log(name, ev, printTargetIds) {
-        var o = document.getElementsByTagName('output')[0];
-        var s = name + ": touches = " + ev.touches.length +
-            " ; targetTouches = " + ev.targetTouches.length +
-            " ; changedTouches = " + ev.changedTouches.length;
-        o.innerHTML += s + " <br>";
-        if (printTargetIds) {
-            s = "";
-            for (var i = 0; i < ev.targetTouches.length; i++) {
-                s += "... id = " + ev.targetTouches[i].identifier + " <br>";
-            }
-            o.innerHTML += s;
-        }
-    }
-    function clearLog(event) {
-        var o = document.getElementsByTagName('output')[0];
-        o.innerHTML = "";
-    }
     function startNote(ev) {
-        // Change background color based on the number simultaneous touches
-        // in the event's targetTouches list:
-        //   yellow - one tap (or hold)
-        //   pink - two taps
-        //   lightblue - more than two taps
+
         var place = mapping[ev.target.id]
         place.synth.detune.value = 0
         place.started = ev.targetTouches[0].clientX
-        console.log(place.started)
         place.synth.triggerAttack(place.note)
 
 
@@ -96,32 +72,7 @@
                 ev.target.style.background = "lightblue";
         }
     }
-    // This is a very basic 2-touch move/pinch/zoom handler that does not include
-    // error handling, only handles horizontal moves, etc.
-    function handle_pinch_zoom(ev) {
-        if (ev.targetTouches.length == 2 && ev.changedTouches.length == 2) {
-            // Check if the two target touches are the same ones that started
-            // the 2-touch
-            var point1 = -1, point2 = -1;
-            for (var i = 0; i < tpCache.length; i++) {
-                if (tpCache[i].identifier == ev.targetTouches[0].identifier) point1 = i;
-                if (tpCache[i].identifier == ev.targetTouches[1].identifier) point2 = i;
-            }
-            if (point1 >= 0 && point2 >= 0) {
-                // Calculate the difference between the start and move coordinates
-                var diff1 = Math.abs(tpCache[point1].clientX - ev.targetTouches[0].clientX);
-                var diff2 = Math.abs(tpCache[point2].clientX - ev.targetTouches[1].clientX);
-                // This threshold is device dependent as well as application specific
-                var PINCH_THRESHHOLD = ev.target.clientWidth / 10;
-                if (diff1 >= PINCH_THRESHHOLD && diff2 >= PINCH_THRESHHOLD)
-                    ev.target.style.background = "green";
-            }
-            else {
-                // empty tpCache
-                tpCache = new Array();
-            }
-        }
-    }
+
     function start_handler(ev) {
         // If the user makes simultaneious touches, the browser will fire a
         // separate touchstart event for each touch point. Thus if there are
@@ -135,7 +86,6 @@
             tpCache.push(ev.targetTouches[i]);
         }
         // }
-        if (logEvents) log("touchStart", ev, true);
         startNote(ev);
     }
     function move_handler(ev) {
@@ -148,25 +98,16 @@
         //
         var place = mapping[ev.target.id]
         var detune = place.started - ev.targetTouches[0].clientX
-        place.synth.detune.value = detune
-
-        ev.preventDefault();
-        if (logEvents) log("touchMove", ev, false);
-        // To avoid too much color flashing many touchmove events are started,
-        // don't update the background if two touch points are active
-        if (!(ev.touches.length == 2 && ev.targetTouches.length == 2))
-            // update_background(ev);
-            // Set the target element's border to dashed to give a clear visual
-            // indication the element received a move event.
-            ev.target.style.border = "dashed";
-        // Check this event for 2-touch Move/Pinch/Zoom gesture
-        handle_pinch_zoom(ev);
+        // place.synth.detune.value = detune
+        if(!isNaN(detune)){
+            place.vibrato.frequency.value = detune * 5 * 0.009
+            place.vibrato.depth.value = detune * 0.1  * 0.009
+        }
     }
     function end_handler(ev) {
         var place = mapping[ev.target.id]
         place.synth.triggerRelease()
         ev.preventDefault();
-        if (logEvents) log(ev.type, ev, false);
         if (ev.targetTouches.length == 0) {
             // Restore background and border to original values
             ev.target.style.background = "white";
@@ -189,15 +130,27 @@
     }
     const detuneKeys = (cents) =>{
         for (const key in mapping) {
-            mapping[key].synth.frequency.rampTo(cents, 0.4)
+            // mapping[key].synth.detune.value = cents
+            // mapping[key].synth.detune.rampTo(cents, 0.4)
+            // var octaveUp = 900
+            var octaveUp = mapping[key].synth.frequency.value  * 2
+            mapping[key].synth.frequency.rampTo(octaveUp, 0.4)
         }
     }
     // setInterval(() => {
     //     detuneKeys(100)
     // }, 2000);
+
     let accelerometer = new Accelerometer({ frequency: 60 });
+    var reading = document.getElementById('reading')
     accelerometer.addEventListener('reading', e => {
-            detuneKeys(accelerometer.y * 1000)
+        var sensorMin = 6.999
+        // var sensorMin = 4
+        var sensorMax = 7
+        var adjusted = (accelerometer.y - sensorMin) / (sensorMax - sensorMin)
+        var limited = Math.min(Math.max(adjusted, 0), 1)
+        reading.innerHTML = limited
+        detuneKeys(limited * 1200)
         // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
     })
 
