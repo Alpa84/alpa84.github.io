@@ -7,15 +7,29 @@
     <style>
         body {
             margin: 0em;
+            padding: 0em;
         }
         div {
             margin: 0em;
-            padding: 2em;
+            padding: 0em;
+        }
+        .octaveContainer {
+            width: 30vw;
+            float:left;
+            padding: 0px;
         }
         .key {
-            /* max-height: 2%; */
+            padding: 0em;
+            height: calc(90vh / 12);
+            font: 15px;
             background: white;
             border: 1px solid black;
+        }
+        .white {
+            background: white;
+        }
+        .black {
+            background: gray;
         }
     </style>
 </head>
@@ -30,33 +44,64 @@
         whamiOn = !whamiOn
     }
     const generateKey = (pitch) => {
-        var vibrato = new Tone.Vibrato().connect(chorus)
+        var vibrato = new Tone.Vibrato().toMaster()
+        // var vibrato = new Tone.Vibrato().connect(chorus)
         return {
             note: pitch,
-            synth: new Tone.Synth({
-                oscillator: { type: 'sawtooth' },
-                envelope: { attack: 0.5, decay: 0}
-             }).connect(vibrato),
-            vibrato: vibrato
+            synth: new Tone.AMSynth({
+                // oscillator: { type: 'sawtooth' },
+                envelope: { decay: 0}
+             }).toMaster(),
+            //  }).connect(vibrato),
+            // vibrato: vibrato
         }
     }
 
-    var delay = new Tone.FeedbackDelay('8n', 0.3).toMaster()
-    var wah = new Tone.Filter(300, 'bandpass', -24).connect(delay)
-    var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
+    // var delay = new Tone.FeedbackDelay('8n', 0.3).toMaster()
+    // var wah = new Tone.Filter(300, 'bandpass', -24).connect(delay)
+    // var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
 
-    var notes = ['A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5'].reverse()
+    var octave = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    var firstOctave = 3
+    var lastOctave = 6
+    var notes = []
+    for (let index = firstOctave; index < lastOctave; index++) {
+        octave.forEach(note => {
+            notes.push(note  + index)
+        });
+    }
+    console.log(notes)
+
     var mapping = {}
     for (const pitch of notes) {
         mapping[pitch] = generateKey(pitch)
     }
-    for (const pitch of notes) {
-        var el = document.createElement('div')
-        el.innerHTML = pitch
-        el.id = pitch
-        el.className = 'key'
-        document.getElementById('container').appendChild(el)
+    let noteIndex = 0
+    var reversed = octave.reverse()
+    for (let index = firstOctave; index < lastOctave; index++) {
+        var octaveContainer = document.createElement('div')
+        octaveContainer.id = 'octave' + index
+        octaveContainer.className = 'octaveContainer'
+        document.getElementById('container').appendChild(octaveContainer)
+        reversed.forEach(note => {
+            var el = document.createElement('div')
+            el.innerHTML = note + index
+            el.id = note + index
+            if (note.endsWith('#')) {
+                el.className = 'key black'
+            } else {
+                el.className = 'key white'
+            }
+            document.getElementById(octaveContainer.id ).appendChild(el)
+        });
     }
+    // for (const pitch of notes) {
+    //     var el = document.createElement('div')
+    //     el.innerHTML = pitch
+    //     el.id = pitch
+    //     el.className = 'key'
+    //     document.getElementById('container').appendChild(el)
+    // }
     var filter = new Tone.Filter(200, "bandpass")
     var tpCache = new Array();
     function startNote(ev) {
@@ -106,17 +151,22 @@
         // This function sets the target element's border to "dashed" to visualy
         // indicate the target received a move event.
         //
+        var threshold = 20
         var place = mapping[ev.target.id]
         var vibrate = place.startedX - ev.targetTouches[0].clientX
-        var detune = place.startedY - ev.targetTouches[0].clientY
+        var movedY = place.startedY - ev.targetTouches[0].clientY
         // place.synth.vibrate.value = vibrate
-        if(!isNaN(vibrate)){
-            place.vibrato.frequency.value = vibrate * 5 * 0.009 * 2
-            place.vibrato.depth.value = vibrate * 0.1  * 0.009 * 2
+        if(!isNaN(movedY) && Math.abs(movedY) > threshold){
+            // place.vibrato.frequency.value = vibrate * 5 * 0.009 * 2
+            // place.vibrato.depth.value = vibrate * 0.1  * 0.009 * 2
             if (whamiOn) {
 
             } else {
-                place.synth.detune.value = detune
+                if (movedY > 0) {
+                    place.synth.detune.value = movedY - threshold
+                } else {
+                    place.synth.detune.value = movedY + threshold
+                }
             }
         }
     }
@@ -126,7 +176,11 @@
         ev.preventDefault();
         if (ev.targetTouches.length == 0) {
             // Restore background and border to original values
-            ev.target.style.background = "white";
+            if (ev.target.id.includes('#') ) {
+                ev.target.style.background = "grey";
+            } else {
+                ev.target.style.background = "white";
+            }
             ev.target.style.border = "1px solid black";
         }
     }
@@ -176,7 +230,7 @@
                 detuneKeys(limited * 1200)
             }
         } else {
-            wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
+            // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
         }
     })
 
