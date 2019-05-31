@@ -15,6 +15,12 @@ const partiesOrVotes = {
     socialismo: 'FRENTE PROGRESISTA CÍVICO Y SOCIAL',
     peronismo: 'JUNTOS'
 }
+const excludedVoteKeys = [
+    'Votos Válidos Emitidos',
+    'Total de votos',
+    'Votos Recurridos',
+    'Votos afirmativos emitidos'
+]
 const partyColors = {
     'JUNTOS': '#0011FF',
     'CAMBIEMOS': '#FFFF00',
@@ -55,7 +61,7 @@ const getPartyCandidates = ({ position, votesOrParty}) => {
         if (totals[position][votesOrParty][subpartyName].nombre){
             let subparty = totals[position][votesOrParty][subpartyName]
             candidates[subpartyName] =  {
-                candidateName: subparty.nombreCandidato,
+                nombreCandidato: subparty.nombreCandidato,
                 name: subpartyName,
                 votesOrParty: votesOrParty
             }
@@ -83,7 +89,15 @@ function decode_utf8(s) {
 }
 addCircles = ({ leafletMap, position, votesOrParty, subparty, clonedSchools}) => {
     clonedSchools.map(school => {
-        let votes = getVotes({ school, position, votesOrParty, subparty})
+        let votes = getAddedVotes({
+            candidate: {
+                votesOrParty,
+                name: subparty,
+            },
+            position,
+            school
+        })
+        // let votes = getVotes({ school, position, votesOrParty, subparty})
         let schoolTotal = totals[position][partiesOrVotes.total][school.from]
         if (schoolTotal !== undefined && votes !== undefined) {
             school.thisPositionVotes = votes
@@ -111,10 +125,9 @@ addCircles = ({ leafletMap, position, votesOrParty, subparty, clonedSchools}) =>
             radius: 200
         }).addTo(leafletMap)
         circles.push(circle)
-        circle.bindPopup(`${school.name} : ${school.dir}. <br>
-        ${(school.ratio * 100).toFixed(2)}% <br>
-        ${school.thisPositionVotes} sobre ${school.schoolTotal} <br>
-        ${school.from}
+        circle.bindPopup(`<b>${(school.ratio * 100).toFixed(2)}%</b> <br>
+        <b>${school.thisPositionVotes}</b> votos sobre un total de <b>${school.schoolTotal}</b> <br>
+        ${school.name} : ${school.dir}. <br>
         `)
     })
     return {maxRatio, minRatio}
@@ -142,8 +155,13 @@ const getKey = (candidate) => {
     return candidate.name ? candidate.name : candidate.votesOrParty
 }
 const getLabel = (candidate) => {
-    let label = getKey(candidate)
-    return decode_utf8(label)
+    let label
+    if (candidate.nombreCandidato) {
+        label = candidate.nombreCandidato.split(' ')[0]
+    } else {
+        label = getKey(candidate)
+    }
+    return toTitleCase(decode_utf8(label))
 }
 const checkSameCandidate  = (candidateA, candidateB) => {
     if (candidateA.name && candidateB.name) {
@@ -154,6 +172,24 @@ const checkSameCandidate  = (candidateA, candidateB) => {
         return false
     }
 }
+const getAddedVotes  = ({candidate, position, school}) => {
+    let votes
+    if (candidate.name) {
+        votes = getVotes({ school, position, votesOrParty: candidate.votesOrParty, subparty: candidate.name })
+    } else if (hasSubparties({ votesOrParty: candidate.votesOrParty, position })) {
+        let partyCandidates = getPartyCandidates({ position, votesOrParty: candidate.votesOrParty })
+        let sum = Object.values(partyCandidates).reduce((aggregate, partyCandidate) => {
+            let votes = getVotes({
+                school, position, votesOrParty: partyCandidate.votesOrParty, subparty: partyCandidate.name
+            })
+            return aggregate + votes
+        }, 0)
+        votes = sum
+    } else {
+        votes = getVotes({ school, position, votesOrParty: candidate.votesOrParty })
+    }
+    return votes
+}
 const addInternalCircles = ({ leafletMap, position, candidates, clonedSchools}) => {
     let winnersList = []
     clonedSchools.map(school => {
@@ -161,18 +197,7 @@ const addInternalCircles = ({ leafletMap, position, candidates, clonedSchools}) 
 
         for (const candidateKey in clonedCandidates) {
             const candidate = clonedCandidates[candidateKey]
-            if ( candidate.name){
-                candidate.votes = getVotes({ school, position, votesOrParty: candidate.votesOrParty, subparty: candidate.name })
-            } else {
-                let partyCandidates = getPartyCandidates({ position, votesOrParty: candidate.votesOrParty})
-                let sum = Object.values(partyCandidates).reduce( (aggregate, partyCandidate) => {
-                    let votes =  getVotes({
-                        school, position, votesOrParty: partyCandidate.votesOrParty, subparty: partyCandidate.name
-                    })
-                    return aggregate + votes
-                }, 0)
-                candidate.votes = sum
-            }
+            candidate.votes = getAddedVotes({candidate, position, school})
         }
         let schoolTotal = totals[position][partiesOrVotes.total][school.from]
         if (schoolTotal !== undefined) {
@@ -215,15 +240,15 @@ const addInternalCircles = ({ leafletMap, position, candidates, clonedSchools}) 
         }).addTo(leafletMap)
         circles.push(circle)
         let candResultsString = []
-        for (const candidateKey in school.candidates) {
-            const candidate = school.candidates[candidateKey]
-            candResultsString.push(`${getLabel(candidate)}: ${school.candidates[getKey(candidate)].votes}`)
+        // let schoolCandidates = school.candidates.sort((a, b) => a.votes - b.votes)
+        // for (const candidateKey in schoolCandidates) {
+        let candidatesArray = Object.values(school.candidates).sort((a, b) => b.votes - a.votes)
+        for (const candidate of candidatesArray) {
+            candResultsString.push(`${getLabel(candidate)}: <b>${school.candidates[getKey(candidate)].votes}</b>`)
         }
         let winnerLabel = getLabel(school.winner)
-        circle.bindPopup(`${ decode_utf8(school.name)} : ${decode_utf8(school.dir)}. <br>
-        Ganador:${decode_utf8(winnerLabel)} <br>
-        ${candResultsString.join('<br>')} <br>
-        ${school.from}
+        circle.bindPopup(`${candResultsString.join('<br>')} <br>
+        ${ decode_utf8(school.name)} : ${decode_utf8(school.dir)}. <br>
         `)
     })
     return winnersList
@@ -234,13 +259,13 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     let container = document.getElementById('generalContainer')
     let infoContainer = document.createElement('div')
     container.appendChild(infoContainer)
-    var label = document.createElement('div')
-    if (subparty) {
-        label.innerHTML = `${position}, ${decode_utf8(votesOrParty)}, ${subparty}, ${totals[position][votesOrParty][subparty].nombreCandidato}`
-    } else {
-        label.innerHTML = `${position}, ${decode_utf8(votesOrParty)}`
-    }
-    infoContainer.appendChild(label)
+    // var label = document.createElement('div')
+    // if (subparty) {
+    //     label.innerHTML = `${position}, ${decode_utf8(votesOrParty)}, ${subparty}, ${totals[position][votesOrParty][subparty].nombreCandidato}`
+    // } else {
+    //     label.innerHTML = `${position}, ${decode_utf8(votesOrParty)}`
+    // }
+    // infoContainer.appendChild(label)
 
 
     var mapContainer = document.createElement('div')
@@ -249,7 +274,7 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     infoContainer.appendChild(mapContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 1200px; height: 800px; position: relative")
+    map.setAttribute("style", "width: 650px; height: 800px; position: relative")
     mapContainer.appendChild(map)
     let leafletMap = L.map(map).setView([-32.9572591, -60.70372820000001], 12);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -280,19 +305,19 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
         circle.setAttribute("style", `color: ${step.color}; font-size: 40 `)
         scale.appendChild(stepDiv)
     })
-
+    return infoContainer
 }
 
-const generateInteralMap = ({ position, candidates}) => {
+const generateInternalMap = ({ position, candidates}) => {
 
     clonedSchools = clone(schools.filter(school => totals[position]['Votos afirmativos emitidos'][school.from] !== undefined))
     let container = document.getElementById('generalContainer')
     let infoContainer = document.createElement('div')
     container.appendChild(infoContainer)
-    var label = document.createElement('div')
-    // label.innerHTML = `Interna del ${decode_utf8(votesOrParty)}, cargo: ${position}`
-    label.innerHTML = `Cargo: ${position}`
-    infoContainer.appendChild(label)
+    // var label = document.createElement('div')
+    // // label.innerHTML = `Interna del ${decode_utf8(votesOrParty)}, cargo: ${position}`
+    // label.innerHTML = `Cargo: ${position}`
+    // infoContainer.appendChild(label)
 
 
     var mapContainer = document.createElement('div')
@@ -301,7 +326,7 @@ const generateInteralMap = ({ position, candidates}) => {
     infoContainer.appendChild(mapContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 1200px; height: 800px; position: relative")
+    map.setAttribute("style", "width: 650px; height: 800px; position: relative")
     mapContainer.appendChild(map)
     let leafletMap = L.map(map).setView([-32.9572591, -60.70372820000001], 12);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -330,7 +355,7 @@ const generateInteralMap = ({ position, candidates}) => {
 var positionsList = ['gobernador', 'diputado', 'intendente', 'concejal']
 
 
-// generateInteralMap({ votesOrParty: partiesOrVotes['socialismo'], position:'concejal' })
+// generateInternalMap({ votesOrParty: partiesOrVotes['socialismo'], position:'concejal' })
 
 
 // Object.keys(totals).map(position => {
@@ -338,7 +363,7 @@ var positionsList = ['gobernador', 'diputado', 'intendente', 'concejal']
 //         if (!totals[position][votesOrParty].count   &&  Object.keys(totals[position][votesOrParty]).length > 1) {
 //             console.log(position, votesOrParty)
 //             let candidates = getPartyCandidates({position, votesOrParty})
-//             generateInteralMap({ position, candidates })
+//             generateInternalMap({ position, candidates })
 //         }
 //     })
 // })
@@ -361,17 +386,19 @@ var positionsList = ['gobernador', 'diputado', 'intendente', 'concejal']
 //     Object.keys(totals[testPosition]).map(votesOrParty => {
 //         testCandidates[votesOrParty] = { votesOrParty: votesOrParty }
 //     })
-//     generateInteralMap({ position: testPosition, candidates: testCandidates })
+//     generateInternalMap({ position: testPosition, candidates: testCandidates })
 // }
-
-
 
 
 const generateSelector = ({options, placeholderId, onchange, id}) => {
     let elem = document.getElementById(id)
     if (elem) { elem.remove()}
+    let selectContainer = document.createElement('div')
+    selectContainer.setAttribute('class', 'form-group')
     let select = document.createElement('select')
+    selectContainer.appendChild(select)
     if (id) {select.setAttribute('id',id ) }
+    select.setAttribute('class', 'form-control' )
     for (var i = 0; i < options.length; i++) {
         var opt = options[i];
         var el = document.createElement("option");
@@ -380,12 +407,12 @@ const generateSelector = ({options, placeholderId, onchange, id}) => {
         select.appendChild(el);
     }
     select.addEventListener('change', onchange)
-    document.getElementById(placeholderId).appendChild(select)
+    document.getElementById(placeholderId).appendChild(selectContainer)
     return select
 }
 
 // generateMap({ votesOrParty: partiesOrVotes.peronismo, subparty: subparties.sukerman, position: 'gobernador' })
-// generateInteralMap({ candidates: {
+// generateInternalMap({ candidates: {
 //     [partiesOrVotes.delFradeCiudadFutura.intendente]: { votesOrParty: partiesOrVotes.delFradeCiudadFutura.intendente},
 //     [subparties.roy]: {
 //         votesOrParty: partiesOrVotes.cambiemos,
@@ -393,7 +420,7 @@ const generateSelector = ({options, placeholderId, onchange, id}) => {
 //     }
 // }, position: 'intendente' })
 
-// generateInteralMap({ candidates: {
+// generateInternalMap({ candidates: {
 //     [partiesOrVotes.delFradeCiudadFutura.intendente]: { votesOrParty: partiesOrVotes.delFradeCiudadFutura.intendente},
 //     [subparties.sukerman]: {
 //         votesOrParty: partiesOrVotes.peronismo,
@@ -401,7 +428,7 @@ const generateSelector = ({options, placeholderId, onchange, id}) => {
 //     }
 // }, position: 'intendente' })
 
-// generateInteralMap({ candidates: {
+// generateInternalMap({ candidates: {
 //     'FRENTE SOCIAL Y POPULAR': { votesOrParty: 'FRENTE SOCIAL Y POPULAR'},
 //     'UNITE POR LA FAMILIA Y LA VIDA': {
 //         votesOrParty: 'UNITE POR LA FAMILIA Y LA VIDA',
@@ -434,14 +461,28 @@ const competitorChange = ({competitor, add}) => {
     let position = select.value
     let prevMap = document.getElementById('dynamicMap')
     if (prevMap) { prevMap.remove()}
-    if (Object.keys(contestants).length > 0) {
-        let map = generateInteralMap({ position, candidates: contestants })
+    if (Object.keys(contestants).length === 1) {
+        let contestantKey =  Object.keys(contestants)[0]
+        let contestant = contestants[contestantKey]
+        let map = generateMap({ position, votesOrParty: contestant.votesOrParty, subparty: contestant.name})
         map.setAttribute('id', 'dynamicMap')
-    // } else if (Object.keys(contestants).length > 0) {
-    //     let map = generateMap({ position, candidates: contestants })
-    //     map.setAttribute('id', 'dynamicMap')
+    } else if (Object.keys(contestants).length > 1) {
+        let map = generateInternalMap({ position, candidates: contestants })
+        map.setAttribute('id', 'dynamicMap')
     }
 }
+const hasSubparties = ({ votesOrParty, position}) => {
+    let firstKey = Object.keys(totals[position][votesOrParty])[0]
+    return isNaN(parseInt(totals[position][votesOrParty][firstKey]))
+}
+const toTitleCase = (phrase) => {
+    return phrase
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+}
+
 const generateList = ({position}) => {
     contestants = {}
     let prevList = document.getElementById('list')
@@ -450,45 +491,71 @@ const generateList = ({position}) => {
     list.setAttribute('id', 'list')
     document.getElementById('competitorsListContainer').appendChild(list)
     Object.keys(totals[position]).map( votesOrParty => {
+        if (excludedVoteKeys.includes(votesOrParty)) { return}
         let party = document.createElement('div')
         party.setAttribute('class', 'party')
         list.appendChild(party)
-        let partyLabel = document.createElement('h3')
+        let partyLabel = document.createElement('h4')
         partyLabel.setAttribute('class', 'partyLabel')
-        partyLabel.innerHTML = decode_utf8(votesOrParty)
-        party.appendChild(partyLabel)
-        let partyCheck = document.createElement('input')
-        partyCheck.setAttribute('type', 'checkbox')
-        partyCheck.addEventListener('change', function () {
-            competitorChange({competitor: {votesOrParty}, add: this.checked})
-        })
-        partyLabel.appendChild(partyCheck)
-        let subparties = document.createElement('div')
-        subparties.setAttribute('class', 'subparties')
-        party.appendChild(subparties)
-        Object.keys(totals[position][votesOrParty]).map( subPartyName => {
-            if (totals[position][votesOrParty][subPartyName].nombre) {
-                let subparty = totals[position][votesOrParty][subPartyName]
-                let subpartyDiv =  document.createElement('div')
-                let subpartyLabel =  document.createElement('div')
-                subpartyLabel.setAttribute('class', 'subpartyLabel')
-                subpartyLabel.innerHTML = `${decode_utf8(subparty.nombreCandidato)}, ${decode_utf8(subPartyName)}`
-                let subpartyCheck = document.createElement('input')
-                subpartyCheck.setAttribute('type', 'checkbox')
-                subpartyCheck.addEventListener('change', function () {
-                    competitorChange({
-                        competitor: { votesOrParty, name: subPartyName },
-                        add: this.checked
-                    })
+
+        if (hasSubparties({votesOrParty, position}) && Object.keys(totals[position][votesOrParty]).length === 1 ){
+            let onlySubpartyKey = Object.keys(totals[position][votesOrParty])[0]
+            let onlySubparty = totals[position][votesOrParty][onlySubpartyKey]
+            partyLabel.innerHTML = toTitleCase(`${onlySubparty.nombreCandidato},  ${decode_utf8(votesOrParty)} `)
+            party.appendChild(partyLabel)
+            let partyCheck = document.createElement('input')
+            partyCheck.setAttribute('type', 'checkbox')
+            partyCheck.addEventListener('change', function () {
+                competitorChange({
+                    competitor: { votesOrParty, name: onlySubpartyKey, nombreCandidato: onlySubparty.nombreCandidato },
+                    add: this.checked,
                 })
-                subpartyDiv.appendChild(subpartyLabel)
-                subpartyLabel.appendChild(subpartyCheck)
-                subparties.appendChild(subpartyDiv)
-            }
-        })
+            })
+            partyLabel.appendChild(partyCheck)
+        } else {
+            partyLabel.innerHTML = toTitleCase(`${decode_utf8(votesOrParty)} `)
+            party.appendChild(partyLabel)
+            let partyCheck = document.createElement('input')
+            partyCheck.setAttribute('type', 'checkbox')
+            partyCheck.addEventListener('change', function () {
+                competitorChange({ competitor: { votesOrParty }, add: this.checked })
+            })
+            partyLabel.appendChild(partyCheck)
+            let subparties = document.createElement('div')
+            subparties.setAttribute('class', 'subparties')
+            party.appendChild(subparties)
+            Object.keys(totals[position][votesOrParty]).map(subPartyName => {
+                if (totals[position][votesOrParty][subPartyName].nombre) {
+                    let subparty = totals[position][votesOrParty][subPartyName]
+                    let subpartyDiv = document.createElement('div')
+                    let subpartyLabel = document.createElement('div')
+                    subpartyLabel.setAttribute('class', 'subpartyLabel')
+                    subpartyLabel.innerHTML = toTitleCase(`${decode_utf8(subparty.nombreCandidato)} `)
+                    let subpartyCheck = document.createElement('input')
+                    subpartyCheck.setAttribute('type', 'checkbox')
+                    subpartyCheck.addEventListener('change', function () {
+                        competitorChange({
+                            competitor: { votesOrParty, name: subPartyName, nombreCandidato: subparty.nombreCandidato },
+                            add: this.checked
+                        })
+                    })
+                    subpartyDiv.appendChild(subpartyLabel)
+                    subpartyLabel.appendChild(subpartyCheck)
+                    subparties.appendChild(subpartyDiv)
+                }
+            })
+        }
     })
+    let clearButton = document.createElement('button')
+    clearButton.setAttribute('class', 'btn btn-warning')
+    clearButton.innerHTML = 'Borrar'
+    clearButton.addEventListener('click', () => {
+        contestants = {}
+        generateList({ position })
+    })
+    list.appendChild(clearButton)
 }
-let select = generateSelector({ options: positionsList, placeholderId: 'generalContainer', onchange: (event)=>  generateList({position: event.target.value})})
+let select = generateSelector({ options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event)=>  generateList({position: event.target.value})})
 generateList({position: 'gobernador'})
 
 // Object.keys(totals).map(position => {
