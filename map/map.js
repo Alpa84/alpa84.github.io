@@ -15,6 +15,12 @@ const partiesOrVotes = {
     socialismo: 'FRENTE PROGRESISTA CÍVICO Y SOCIAL',
     peronismo: 'JUNTOS'
 }
+const customNames = {
+    'DEL FRADE CARLOS ALFREDO': 'Del Frade',
+    'LOPEZ MOLINA RODRIGO MANUEL': 'Lopez Molina',
+    'DI BERT PABLO FERNANDO': 'Di Bert',
+    'DE PONTI LUCILA MARIA': 'De Ponti',
+}
 const excludedVoteKeys = [
     'Votos Válidos Emitidos',
     'Total de votos',
@@ -24,7 +30,11 @@ const excludedVoteKeys = [
 const partyColors = {
     'JUNTOS': '#0011FF',
     'CAMBIEMOS': '#FFFF00',
+    'VAMOS JUNTOS': '#FFFF00',
+    'SOMOS VIDA': '#4286f4',
     'FRENTE PROGRESISTA CÍVICO Y SOCIAL': '#FF8000',
+    'ADELANTE': '#FF8000',
+    'UNIDAD SOCIAL Y POPULAR': '#319322',
 }
 const subparties = {
     sukerman: 'SUMAR',
@@ -36,6 +46,13 @@ const subparties = {
 const scaleStops = 5
 const InterpolateLinearMethod = 'interpolateViridis'
 const InterpolateWinnerMethod = 'interpolateSinebow'
+
+
+let initialContestants = {
+    'ADELANTE': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "ADELANTE", nombreCandidato: "BONFATTI ANTONIO JUAN" },
+    'ENCUENTRO POR SANTA FE': { votesOrParty: "JUNTOS", name: "ENCUENTRO POR SANTA FE", nombreCandidato: "BIELSA MARIA EUGENIA" },
+    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" }
+}
 
 const getVotes = ({school, position, votesOrParty, subparty}) => {
     let votes
@@ -156,7 +173,9 @@ const getKey = (candidate) => {
 }
 const getLabel = (candidate) => {
     let label
-    if (candidate.nombreCandidato) {
+    if (customNames[candidate.nombreCandidato]) {
+        label = customNames[candidate.nombreCandidato]
+    } else if (candidate.nombreCandidato) {
         label = candidate.nombreCandidato.split(' ')[0]
     } else {
         label = getKey(candidate)
@@ -220,6 +239,8 @@ const addInternalCircles = ({ leafletMap, position, candidates, clonedSchools}) 
         colorValue = (candCount - 1) * count / candCount
         if (!candidate.name && partyColors[candidate.votesOrParty]) {
             candidate.color = partyColors[candidate.votesOrParty]
+        } else if (candidate.name && partyColors[candidate.name]) {
+            candidate.color = partyColors[candidate.name]
         } else {
             candidate.color =  d3[InterpolateWinnerMethod](colorValue)
         }
@@ -297,7 +318,7 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     var scale = document.createElement('div')
     mapContainer.appendChild(scale)
     scaleSteps.reverse().map( step => {
-        let stepDiv = document.createElement('div')
+        let stepDiv = document.createElement('h5')
         stepDiv.innerHTML = `${(step.ratio * 100).toFixed(2)} %`
         var circle = document.createElement('span')
         circle.innerHTML = '&#9679;'
@@ -335,20 +356,21 @@ const generateInternalMap = ({ position, candidates}) => {
             '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         id: 'mapbox.streets'
-    }).addTo(leafletMap);
-    let winners = addInternalCircles({ leafletMap, position, candidates, clonedSchools})
-
-    var scale = document.createElement('div')
-    mapContainer.appendChild(scale)
-    winners.map( candidate => {
-        let stepDiv = document.createElement('div')
-        stepDiv.innerHTML = `${getLabel(candidate)}`
-        var circle = document.createElement('span')
-        circle.innerHTML = '&#9679;'
-        stepDiv.appendChild(circle)
-        circle.setAttribute("style", `color: ${candidate.color}; font-size: 40 `)
-        scale.appendChild(stepDiv)
-    })
+    }).addTo(leafletMap)
+    if (Object.keys(candidates).length > 0) {
+        let winners = addInternalCircles({ leafletMap, position, candidates, clonedSchools})
+        var scale = document.createElement('div')
+        mapContainer.appendChild(scale)
+        winners.map(candidate => {
+            let stepDiv = document.createElement('h5')
+            stepDiv.innerHTML = `${getLabel(candidate)}`
+            var circle = document.createElement('span')
+            circle.innerHTML = '&#9679;'
+            stepDiv.appendChild(circle)
+            circle.setAttribute("style", `color: ${candidate.color}; font-size: 40 `)
+            scale.appendChild(stepDiv)
+        })
+    }
     return infoContainer
 }
 
@@ -450,18 +472,27 @@ const onPositionChange = (event) => {
         id: 'party'
     })
 }
-let contestants = {}
+let contestants = {
+    'ADELANTE': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "ADELANTE", nombreCandidato: "BONFATTI ANTONIO JUAN" },
+    'ENCUENTRO POR SANTA FE': { votesOrParty: "JUNTOS", name: "ENCUENTRO POR SANTA FE", nombreCandidato: "BIELSA MARIA EUGENIA" },
+    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" }
+}
 
 const competitorChange = ({competitor, add}) => {
-    if (add) {
-        contestants[getKey(competitor)] = competitor
-    } else {
-        delete contestants[getKey(competitor)]
+    if (competitor) {
+        if (add) {
+            contestants[getKey(competitor)] = competitor
+        } else {
+            delete contestants[getKey(competitor)]
+        }
     }
     let position = select.value
     let prevMap = document.getElementById('dynamicMap')
     if (prevMap) { prevMap.remove()}
-    if (Object.keys(contestants).length === 1) {
+    if (Object.keys(contestants).length === 0) {
+        let map = generateInternalMap({ position, candidates: contestants })
+        map.setAttribute('id', 'dynamicMap')
+    }else if (Object.keys(contestants).length === 1) {
         let contestantKey =  Object.keys(contestants)[0]
         let contestant = contestants[contestantKey]
         let map = generateMap({ position, votesOrParty: contestant.votesOrParty, subparty: contestant.name})
@@ -484,7 +515,6 @@ const toTitleCase = (phrase) => {
 }
 
 const generateList = ({position}) => {
-    contestants = {}
     let prevList = document.getElementById('list')
     if (prevList) { prevList.remove()}
     let list = document.createElement('div')
@@ -497,7 +527,6 @@ const generateList = ({position}) => {
         list.appendChild(party)
         let partyLabel = document.createElement('h4')
         partyLabel.setAttribute('class', 'partyLabel')
-
         if (hasSubparties({votesOrParty, position}) && Object.keys(totals[position][votesOrParty]).length === 1 ){
             let onlySubpartyKey = Object.keys(totals[position][votesOrParty])[0]
             let onlySubparty = totals[position][votesOrParty][onlySubpartyKey]
@@ -505,6 +534,7 @@ const generateList = ({position}) => {
             party.appendChild(partyLabel)
             let partyCheck = document.createElement('input')
             partyCheck.setAttribute('type', 'checkbox')
+            partyCheck.setAttribute('id', onlySubpartyKey)
             partyCheck.addEventListener('change', function () {
                 competitorChange({
                     competitor: { votesOrParty, name: onlySubpartyKey, nombreCandidato: onlySubparty.nombreCandidato },
@@ -517,6 +547,7 @@ const generateList = ({position}) => {
             party.appendChild(partyLabel)
             let partyCheck = document.createElement('input')
             partyCheck.setAttribute('type', 'checkbox')
+            partyCheck.setAttribute('id', votesOrParty)
             partyCheck.addEventListener('change', function () {
                 competitorChange({ competitor: { votesOrParty }, add: this.checked })
             })
@@ -533,6 +564,7 @@ const generateList = ({position}) => {
                     subpartyLabel.innerHTML = toTitleCase(`${decode_utf8(subparty.nombreCandidato)} `)
                     let subpartyCheck = document.createElement('input')
                     subpartyCheck.setAttribute('type', 'checkbox')
+                    subpartyCheck.setAttribute('id', subPartyName)
                     subpartyCheck.addEventListener('change', function () {
                         competitorChange({
                             competitor: { votesOrParty, name: subPartyName, nombreCandidato: subparty.nombreCandidato },
@@ -552,12 +584,22 @@ const generateList = ({position}) => {
     clearButton.addEventListener('click', () => {
         contestants = {}
         generateList({ position })
+        competitorChange({competitor: {}, add: false})
     })
     list.appendChild(clearButton)
 }
-let select = generateSelector({ options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event)=>  generateList({position: event.target.value})})
+let select = generateSelector({ options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event)=>  {
+    contestants = {}
+    competitorChange({ competitor: {}, add: false })
+    generateList({position: event.target.value})
+}})
 generateList({position: 'gobernador'})
 
+competitorChange({competitor: undefined, add:undefined})
+
+for (const key in contestants) {
+    document.getElementById(key).checked = true
+}
 // Object.keys(totals).map(position => {
 //     Object.keys(totals[position]).map( votesOrParty => {
 //         if (totals[position][votesOrParty].count) {
@@ -569,5 +611,6 @@ generateList({position: 'gobernador'})
 //         }
 //     })
 // })
+
 
 
