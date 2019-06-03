@@ -1,5 +1,7 @@
 let mapCoordinates = [-32.9572591, -60.68372820000001]
 let mapZoom = 12
+let mapWidth = '700px'
+let mapHeight = '600px'
 
 const partiesOrVotes = {
     afirmativos: 'Votos afirmativos emitidos',
@@ -54,9 +56,9 @@ const InterpolateWinnerMethod = 'interpolateSinebow'
 
 
 let initialContestants = {
-    'ADELANTE': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "ADELANTE", nombreCandidato: "BONFATTI ANTONIO JUAN" },
     'ENCUENTRO POR SANTA FE': { votesOrParty: "JUNTOS", name: "ENCUENTRO POR SANTA FE", nombreCandidato: "BIELSA MARIA EUGENIA" },
-    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" }
+    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" },
+    'CAMBIEMOS': { votesOrParty: "CAMBIEMOS", name: "SUMAR", nombreCandidato: "CORRAL JOSE MANUEL" }
 }
 
 const getVotes = ({school, position, votesOrParty, subparty}) => {
@@ -303,7 +305,7 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     infoContainer.appendChild(mapContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 500px; height: 600px;")
+    map.setAttribute("style", `width: ${mapWidth}; height: ${mapHeight};`)
     mapContainer.appendChild(map)
     let leafletMap = L.map(map).setView(mapCoordinates, mapZoom);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -357,7 +359,7 @@ const generateInternalMap = ({ position, candidates}) => {
     container.appendChild(infoContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 500px; height: 600px;")
+    map.setAttribute("style", `width: ${mapWidth}; height: ${mapHeight};`)
     mapContainer.appendChild(map)
     let leafletMap = L.map(map).setView(mapCoordinates, mapZoom);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -484,9 +486,9 @@ const onPositionChange = (event) => {
     })
 }
 let contestants = {
-    'ADELANTE': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "ADELANTE", nombreCandidato: "BONFATTI ANTONIO JUAN" },
     'ENCUENTRO POR SANTA FE': { votesOrParty: "JUNTOS", name: "ENCUENTRO POR SANTA FE", nombreCandidato: "BIELSA MARIA EUGENIA" },
-    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" }
+    'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" },
+    'VAMOS JUNTOS': { votesOrParty: "CAMBIEMOS", name: "VAMOS JUNTOS", nombreCandidato: "CORRAL JOSE MANUEL" },
 }
 
 const competitorChange = ({competitor, add}) => {
@@ -555,6 +557,13 @@ const generateList = ({position}) => {
                 })
             })
             partyLabel.prepend(partyCheck)
+            partyLabelText.addEventListener('click', () => {
+                partyCheck.checked = !partyCheck.checked
+                competitorChange({
+                    competitor: { votesOrParty, name: onlySubpartyKey, nombreCandidato: onlySubparty.nombreCandidato },
+                    add: partyCheck.checked,
+                })
+            })
         } else {
             let partyLabelText = document.createElement('span')
             partyLabelText.innerHTML = toTitleCase(` ${decode_utf8(votesOrParty)}`)
@@ -567,6 +576,10 @@ const generateList = ({position}) => {
                 competitorChange({ competitor: { votesOrParty }, add: this.checked })
             })
             partyLabel.prepend(partyCheck)
+            partyLabelText.addEventListener('click', () => {
+                partyCheck.checked = !partyCheck.checked
+                competitorChange({ competitor: { votesOrParty }, add: partyCheck.checked })
+            })
             let subparties = document.createElement('div')
             subparties.setAttribute('class', 'subparties')
             party.appendChild(subparties)
@@ -591,6 +604,13 @@ const generateList = ({position}) => {
                     subpartyDiv.appendChild(subpartyLabel)
                     subpartyLabel.prepend(subpartyCheck)
                     subparties.appendChild(subpartyDiv)
+                    subpartyLabelText.addEventListener('click', () => {
+                        subpartyCheck.checked = !subpartyCheck.checked
+                        competitorChange({
+                            competitor: { votesOrParty, name: subPartyName, nombreCandidato: subparty.nombreCandidato },
+                            add: subpartyCheck.checked
+                        })
+                    })
                 }
             })
         }
