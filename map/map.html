@@ -18,16 +18,25 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
     <div class="container-fluid" id='all'>
         <div class="row">
-            <div class="col-sm-8" id='generalContainer'>
+            <div class="col-sm-5" id='generalContainer'>
             </div>
-            <div class="col-sm-4" id='competitorsListContainer'>
+            <div class="col-sm-2" id='scaleContainer'>
+            </div>
+            <div class="col-sm-5" id='competitorsListContainer'>
             </div>
         </div>
+        <div class="row">
+            <div class="col-sm-5" id='generalContainer'>
+                <input type="checkbox" name="" id="filterOutliers" checked> filtrar valores extremos</input>
+            </div>
+        </div>
+
     </div>
     <script src="schools.js"></script>
     <script src="schoolTotals.js"></script>

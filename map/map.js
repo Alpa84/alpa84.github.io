@@ -1,3 +1,6 @@
+let mapCoordinates = [-32.9572591, -60.68372820000001]
+let mapZoom = 12
+
 const partiesOrVotes = {
     afirmativos: 'Votos afirmativos emitidos',
     anulados: 'Votos Anulados',
@@ -25,7 +28,8 @@ const excludedVoteKeys = [
     'Votos Válidos Emitidos',
     'Total de votos',
     'Votos Recurridos',
-    'Votos afirmativos emitidos'
+    'Votos afirmativos emitidos',
+    'Votos impugnados'
 ]
 const partyColors = {
     'JUNTOS': '#0011FF',
@@ -34,7 +38,8 @@ const partyColors = {
     'SOMOS VIDA': '#4286f4',
     'FRENTE PROGRESISTA CÍVICO Y SOCIAL': '#FF8000',
     'ADELANTE': '#FF8000',
-    'UNIDAD SOCIAL Y POPULAR': '#319322',
+    'UNIDAD SOCIAL Y POPULAR': '#319322', // delfra
+    'ARRIBA ROSARIO': '#3de534', // javkin
 }
 const subparties = {
     sukerman: 'SUMAR',
@@ -127,6 +132,9 @@ addCircles = ({ leafletMap, position, votesOrParty, subparty, clonedSchools}) =>
         return notUndef && school.schoolTotal !== 0
     })
     let ratios = schoolsWithData.map(school => school.ratio)
+    if (document.getElementById('filterOutliers').checked) {
+        ratios = filterOutliers(ratios)
+    }
     let maxRatio = Math.max(...ratios)
     let minRatio = Math.min(...ratios)
     schoolsWithData
@@ -295,9 +303,9 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     infoContainer.appendChild(mapContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 650px; height: 800px; position: relative")
+    map.setAttribute("style", "width: 500px; height: 600px;")
     mapContainer.appendChild(map)
-    let leafletMap = L.map(map).setView([-32.9572591, -60.70372820000001], 12);
+    let leafletMap = L.map(map).setView(mapCoordinates, mapZoom);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -316,7 +324,9 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
         })
     }
     var scale = document.createElement('div')
-    mapContainer.appendChild(scale)
+    let scaleContainer = document.getElementById('scaleContainer')
+    scaleContainer.innerHTML = ''
+    scaleContainer.appendChild(scale)
     scaleSteps.reverse().map( step => {
         let stepDiv = document.createElement('h5')
         stepDiv.innerHTML = `${(step.ratio * 100).toFixed(2)} %`
@@ -334,22 +344,22 @@ const generateInternalMap = ({ position, candidates}) => {
     clonedSchools = clone(schools.filter(school => totals[position]['Votos afirmativos emitidos'][school.from] !== undefined))
     let container = document.getElementById('generalContainer')
     let infoContainer = document.createElement('div')
-    container.appendChild(infoContainer)
-    // var label = document.createElement('div')
-    // // label.innerHTML = `Interna del ${decode_utf8(votesOrParty)}, cargo: ${position}`
-    // label.innerHTML = `Cargo: ${position}`
-    // infoContainer.appendChild(label)
-
 
     var mapContainer = document.createElement('div')
     mapContainer.setAttribute('class', 'mapContainer')
-    mapContainer.setAttribute("style", "display: flex")
+
+    var scale = document.createElement('div')
     infoContainer.appendChild(mapContainer)
+    let scaleContainer = document.getElementById('scaleContainer')
+    scaleContainer.innerHTML = ''
+    scaleContainer.appendChild(scale)
+    infoContainer.setAttribute('clase', 'row')
+    container.appendChild(infoContainer)
 
     var map = document.createElement('div')
-    map.setAttribute("style", "width: 650px; height: 800px; position: relative")
+    map.setAttribute("style", "width: 500px; height: 600px;")
     mapContainer.appendChild(map)
-    let leafletMap = L.map(map).setView([-32.9572591, -60.70372820000001], 12);
+    let leafletMap = L.map(map).setView(mapCoordinates, mapZoom);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -359,8 +369,7 @@ const generateInternalMap = ({ position, candidates}) => {
     }).addTo(leafletMap)
     if (Object.keys(candidates).length > 0) {
         let winners = addInternalCircles({ leafletMap, position, candidates, clonedSchools})
-        var scale = document.createElement('div')
-        mapContainer.appendChild(scale)
+
         winners.map(candidate => {
             let stepDiv = document.createElement('h5')
             stepDiv.innerHTML = `${getLabel(candidate)}`
@@ -375,7 +384,9 @@ const generateInternalMap = ({ position, candidates}) => {
 }
 
 var positionsList = ['gobernador', 'diputado', 'intendente', 'concejal']
-
+document.getElementById('filterOutliers').addEventListener('change', () => {
+    competitorChange({ competitor: {}, add: false })
+})
 
 // generateInternalMap({ votesOrParty: partiesOrVotes['socialismo'], position:'concejal' })
 
@@ -530,7 +541,9 @@ const generateList = ({position}) => {
         if (hasSubparties({votesOrParty, position}) && Object.keys(totals[position][votesOrParty]).length === 1 ){
             let onlySubpartyKey = Object.keys(totals[position][votesOrParty])[0]
             let onlySubparty = totals[position][votesOrParty][onlySubpartyKey]
-            partyLabel.innerHTML = toTitleCase(`${onlySubparty.nombreCandidato},  ${decode_utf8(votesOrParty)} `)
+            let partyLabelText =  document.createElement('span')
+            partyLabelText.innerHTML = toTitleCase(` ${onlySubparty.nombreCandidato},  ${decode_utf8(votesOrParty)}`)
+            partyLabel.appendChild(partyLabelText)
             party.appendChild(partyLabel)
             let partyCheck = document.createElement('input')
             partyCheck.setAttribute('type', 'checkbox')
@@ -541,9 +554,11 @@ const generateList = ({position}) => {
                     add: this.checked,
                 })
             })
-            partyLabel.appendChild(partyCheck)
+            partyLabel.prepend(partyCheck)
         } else {
-            partyLabel.innerHTML = toTitleCase(`${decode_utf8(votesOrParty)} `)
+            let partyLabelText = document.createElement('span')
+            partyLabelText.innerHTML = toTitleCase(` ${decode_utf8(votesOrParty)}`)
+            partyLabel.appendChild(partyLabelText)
             party.appendChild(partyLabel)
             let partyCheck = document.createElement('input')
             partyCheck.setAttribute('type', 'checkbox')
@@ -551,7 +566,7 @@ const generateList = ({position}) => {
             partyCheck.addEventListener('change', function () {
                 competitorChange({ competitor: { votesOrParty }, add: this.checked })
             })
-            partyLabel.appendChild(partyCheck)
+            partyLabel.prepend(partyCheck)
             let subparties = document.createElement('div')
             subparties.setAttribute('class', 'subparties')
             party.appendChild(subparties)
@@ -561,7 +576,9 @@ const generateList = ({position}) => {
                     let subpartyDiv = document.createElement('div')
                     let subpartyLabel = document.createElement('div')
                     subpartyLabel.setAttribute('class', 'subpartyLabel')
-                    subpartyLabel.innerHTML = toTitleCase(`${decode_utf8(subparty.nombreCandidato)} `)
+                    let subpartyLabelText = document.createElement('span')
+                    subpartyLabelText.innerHTML = toTitleCase(` ${decode_utf8(subparty.nombreCandidato)}`)
+                    subpartyLabel.appendChild(subpartyLabelText)
                     let subpartyCheck = document.createElement('input')
                     subpartyCheck.setAttribute('type', 'checkbox')
                     subpartyCheck.setAttribute('id', subPartyName)
@@ -572,7 +589,7 @@ const generateList = ({position}) => {
                         })
                     })
                     subpartyDiv.appendChild(subpartyLabel)
-                    subpartyLabel.appendChild(subpartyCheck)
+                    subpartyLabel.prepend(subpartyCheck)
                     subparties.appendChild(subpartyDiv)
                 }
             })
@@ -580,7 +597,7 @@ const generateList = ({position}) => {
     })
     let clearButton = document.createElement('button')
     clearButton.setAttribute('class', 'btn btn-warning')
-    clearButton.innerHTML = 'Borrar'
+    clearButton.innerHTML = 'Borrar Selección'
     clearButton.addEventListener('click', () => {
         contestants = {}
         generateList({ position })
@@ -614,3 +631,26 @@ for (const key in contestants) {
 
 
 
+function filterOutliers(someArray) {
+
+    if (someArray.length < 4)
+        return someArray;
+
+    let values, q1, q3, iqr, maxValue, minValue;
+
+    values = someArray.slice().sort((a, b) => a - b);//copy array fast and sort
+
+    if ((values.length / 4) % 1 === 0) {//find quartiles
+        q1 = 1 / 2 * (values[(values.length / 4)] + values[(values.length / 4) + 1]);
+        q3 = 1 / 2 * (values[(values.length * (3 / 4))] + values[(values.length * (3 / 4)) + 1]);
+    } else {
+        q1 = values[Math.floor(values.length / 4 + 1)];
+        q3 = values[Math.ceil(values.length * (3 / 4) + 1)];
+    }
+
+    iqr = q3 - q1;
+    maxValue = q3 + iqr * 1.5;
+    minValue = q1 - iqr * 1.5;
+
+    return values.filter((x) => (x >= minValue) && (x <= maxValue));
+}

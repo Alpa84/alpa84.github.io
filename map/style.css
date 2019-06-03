@@ -1,0 +1,6 @@
+
+h1 {
+  /* color: navy;
+  margin-left: 20px; */
+}
+input[type="checkbox"]:checked+span{background:rgb(236, 235, 235);}​
