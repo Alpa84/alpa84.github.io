@@ -333,7 +333,7 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
         let stepDiv = document.createElement('h5')
         stepDiv.innerHTML = `${(step.ratio * 100).toFixed(2)} %`
         var circle = document.createElement('span')
-        circle.innerHTML = '&#9679;'
+        circle.innerHTML = "<span class='circle'>&#9679;</span>"
         stepDiv.appendChild(circle)
         circle.setAttribute("style", `color: ${step.color}; font-size: 40 `)
         scale.appendChild(stepDiv)
@@ -377,7 +377,7 @@ const generateInternalMap = ({ position, candidates}) => {
             let stepDiv = document.createElement('h5')
             stepDiv.innerHTML = `${getLabel(candidate)}`
             var circle = document.createElement('span')
-            circle.innerHTML = '&#9679;'
+            circle.innerHTML = "<span class='circle'>&#9679;</span>"
             stepDiv.appendChild(circle)
             circle.setAttribute("style", `color: ${candidate.color}; font-size: 40 `)
             scale.appendChild(stepDiv)

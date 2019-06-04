@@ -1,5 +1,13 @@
 
 body {
+  color: #333333;
+  font-family: 'Barlow', sans-serif;
 }
-
+.circle {
+  font-size: 1.8em;
+}
+.title {
+  font-size: 6rem;
+  letter-spacing: -1px;
+}
 input[type="checkbox"]:checked+span{background:rgb(207, 207, 207);}​
