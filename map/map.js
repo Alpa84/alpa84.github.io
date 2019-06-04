@@ -51,7 +51,7 @@ const subparties = {
 }
 
 const scaleStops = 5
-const InterpolateLinearMethod = 'interpolateViridis'
+const InterpolateLinearMethod = 'interpolateOrRd'
 const InterpolateWinnerMethod = 'interpolateSinebow'
 
 
@@ -348,6 +348,7 @@ const generateInternalMap = ({ position, candidates}) => {
     let infoContainer = document.createElement('div')
 
     var mapContainer = document.createElement('div')
+    mapContainer.setAttribute("style", "display: flex")
     mapContainer.setAttribute('class', 'mapContainer')
 
     var scale = document.createElement('div')
