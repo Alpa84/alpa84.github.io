@@ -2,6 +2,7 @@ let mapCoordinates = [-32.9572591, -60.68372820000001]
 let mapZoom = 12
 let mapWidth = '700px'
 let mapHeight = '600px'
+const NonWinnerColor = '#d8d4d4'
 
 const partiesOrVotes = {
     afirmativos: 'Votos afirmativos emitidos',
@@ -417,18 +418,28 @@ const generateInternalMap = ({ position, candidates}) => {
         let winners = addInternalCircles({ leafletMap, position, candidates, clonedSchools})
 
         winners.map(candidate => {
-            let stepDiv = document.createElement('h5')
-            stepDiv.innerHTML = `${getLabel(candidate)}`
-            var circle = document.createElement('span')
-            circle.innerHTML = "<span class='circle'>&#9679;</span>"
-            stepDiv.appendChild(circle)
-            circle.setAttribute("style", `color: ${candidate.color}; font-size: 40 `)
+            let stepDiv = createScaleStep({candidate, color: candidate.color})
+            scale.appendChild(stepDiv)
+        })
+        let notInWinners = Object.values(candidates).filter( candidate => {
+            return !Object.values(winners).some( winner => checkSameCandidate(winner, candidate))
+        })
+        notInWinners.map( notWinner => {
+            let stepDiv = createScaleStep({ candidate: notWinner, color: NonWinnerColor })
             scale.appendChild(stepDiv)
         })
     }
     return infoContainer
 }
-
+const createScaleStep = ({candidate, color }) => {
+    let stepDiv = document.createElement('h5')
+    stepDiv.innerHTML = `${getLabel(candidate)}`
+    var circle = document.createElement('span')
+    circle.innerHTML = "<span class='circle'>&#9679;</span>"
+    stepDiv.appendChild(circle)
+    circle.setAttribute("style", `color: ${color}; font-size: 40 `)
+    return stepDiv
+}
 var positionsList = ['gobernador', 'diputado', 'intendente', 'concejal']
 document.getElementById('filterOutliers').addEventListener('change', () => {
     competitorChange({ competitor: {}, add: false })
@@ -550,9 +561,10 @@ const competitorChange = ({competitor, add}) => {
     let params = contestantsToParams({position, contestants})
     var url = window.location.href.split('?')[0]
     let completeUrl = `${url}?${params}`
-    window.history.pushState({}, "", completeUrl)
-    document.getElementById('share').innerHTML = completeUrl
-
+    // window.history.pushState({}, "", completeUrl)
+    let shareLink = document.getElementById('share')
+    shareLink.innerHTML = completeUrl
+    shareLink.setAttribute('href', completeUrl)
     let prevMap = document.getElementById('dynamicMap')
     if (prevMap) { prevMap.remove()}
     if (Object.keys(contestants).length === 0) {
