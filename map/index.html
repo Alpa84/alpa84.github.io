@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Geografía Política: Paso 2019</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Barlow&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div class="container-fluid" id='all'>
+        <div>
+            <h2 class='title'> <b>Geografía Política</b> PASO 2019</h2>
+            <h2>Elegí los candidatos para comparar quien tuvo más votos en cada local electoral.</h2>
+            <h2>Elegí un solo candidato para ver sus resultados en cada escuela.</h2>
+        </div>
+        <div class="row">
+            <div class="col-sm-6" id='generalContainer'>
+            </div>
+            <div class="col-sm-1" id='scaleContainer'>
+            </div>
+            <div class="col-sm-5" id='competitorsListContainer'>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-5" id='generalContainer'>
+                <input type="checkbox" name="" id="filterOutliers" checked> filtrar outliers</input>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div>
+            <h3>Para compartir este mapa:</h3>
+            <h3>
+                <a id='share'></a>
+                <!-- <span class="badge" id='share'></span> -->
+            </h3>
+        </div>
+        <br>
+        <br>
+        <h2>Algunas Miradas</h2>
+        <h4 id='diputados'>Diputados, Todos los candidatos, sumados por partido</h4>
+        <div class="row">
+            <div class="col-sm-6" id='MicroCentroContainer'>
+            </div>
+            <div class="col-sm-1" id='MicroCentroScaleContainer'>
+            </div>
+            <div class="col-sm-5">
+                <h4>Micro-centro derecha</h4>
+                <div>
+                    Chumpitaz (Cambiemos) prevalece en la zona más céntrica de la ciudad.
+                </div>
+                <div>
+                    En la categoría diputados todos los justicialistas juntos sólo ganaron en dos escuelas de barrios
+                    históricamente peronistas, màs una del centro.
+                </div>
+                <div>
+                    El resto de los locales electorales queda dominado por Miguel Lifschitz.
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4 id='opuestos'>Diputados, Carlos Del Frade contra Amalia Granata</h4>
+        <div class="row">
+            <div class="col-sm-6" id='estilosContainer'>
+            </div>
+            <div class="col-sm-1" id='estilosScaleContainer'>
+            </div>
+            <div class="col-sm-3">
+                <h4>Estilos Opuestos</h4>
+                <div>
+                    La ciudad queda dividida en dos si comparamos los resultados de Amalia Granata con los de Carlos Del
+                    Frade.
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4 id='intendente'>Intendente, Todos los candidatos, sumados por partido</h4>
+        <div class="row">
+            <div class="col-sm-6" id='intendenteContainer'>
+            </div>
+            <div class="col-sm-1" id='intendenteScaleContainer'>
+            </div>
+            <div class="col-sm-4">
+                <h4>Mira que ironía, querida</h4>
+                <div>
+                    Para el cargo de intendente los votos combinados de Cambiemos sólo prevalecieron en un local
+                    electoral. Es la Facutad de Humanidades y Artes.
+                </div>
+                <div>
+                    Esta tendencia <a href="http://geografiapolitica.herokuapp.com/" target="_blank">se repitió
+                        consistentemente</a> en las PASO 2015
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4 id='monteverde'>Juan Monteverde, porcentaje de votos</h4>
+        <div class="row">
+            <div class="col-sm-6" id='monteverdeContainer'>
+            </div>
+            <div class="col-sm-1" id='monteverdeScaleContainer'>
+            </div>
+            <div class="col-sm-3">
+                <h4>The North Remebers</h4>
+                <div>
+                    Para el cargo de intendente Tomás Monteverde tuvo más fuerza en Nuevo Alberdi.
+                </div>
+                <div>
+                    También obtuvo buenos resultados en el barrio Luis Agote, donde está la escuela que lo vió crecer.
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>Metodología:</h4>
+                    <div>
+                        Se sumaron los resultados del escrutinio provisorio de las elecciones generales de 2019 de cada
+                        candidato de todas
+                        las
+                        mesas de cada local electoral.
+                        Se relevó la ubicación geográfica de los 298 locales electorales por medios automatizados y se
+                        revisó cada uno de
+                        estos
+                        resultados.
+                        <a href="https://elecciones.santafe.gob.ar/mesaXml/gobernador/3687/N">Fuente</a>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>Visualización de los resultados:</h4>
+                    <div>
+                        Cada círculo en el mapa está ubicado de acuerdo al domicilio de cada local electoral en la
+                        ciudad. El color de cada
+                        círculo representa la proporción de votos que obtuvo cada candidato comparado con el total de
+                        votos efectuados en ese
+                        local electoral. La referencia de los colores de los resultados por partido va del blanco para
+                        los resultados más bajos
+                        de cada candidato, pasando por el rosa, el rojo hasta llegar al rojo oscuro para los resultados
+                        más altos. Se representan
+                        los valores relativos de los resultados (el porcentaje del total) y no a los absolutos, para
+                        evitar que los resultados
+                        por zona varíen en función a la cantidad total de votos de cada escuela.
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>
+                        By: <b class='bold'>Alejandro Panza</b> alejandrofpanza@gmail.com
+                    </h4>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+
+    </div>
+    <script src="schools.js"></script>
+    <script src="schoolTotals.js"></script>
+    <script src="map.js"></script>
+</body>
+
+</html>
