@@ -329,9 +329,9 @@ const addInternalCircles = ({ leafletMap, position, candidates, clonedSchools}) 
     return winnersList
 }
 
-const generateMap = ({ votesOrParty, subparty, position}) => {
+const generateMap = ({ votesOrParty, subparty, position, containerId, scaleContainerId}) => {
     clonedSchools = clone(schools)
-    let container = document.getElementById('generalContainer')
+    let container = document.getElementById(containerId)
     let infoContainer = document.createElement('div')
     container.appendChild(infoContainer)
     // var label = document.createElement('div')
@@ -370,7 +370,7 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
         })
     }
     var scale = document.createElement('div')
-    let scaleContainer = document.getElementById('scaleContainer')
+    let scaleContainer = document.getElementById(scaleContainerId)
     scaleContainer.innerHTML = ''
     scaleContainer.appendChild(scale)
     scaleSteps.reverse().map( step => {
@@ -385,10 +385,10 @@ const generateMap = ({ votesOrParty, subparty, position}) => {
     return infoContainer
 }
 
-const generateInternalMap = ({ position, candidates}) => {
+const generateInternalMap = ({ position, candidates, includeNonWinners, containerId, scaleContainerId}) => {
 
     clonedSchools = clone(schools.filter(school => totals[position]['Votos afirmativos emitidos'][school.from] !== undefined))
-    let container = document.getElementById('generalContainer')
+    let container = document.getElementById(containerId)
     let infoContainer = document.createElement('div')
 
     var mapContainer = document.createElement('div')
@@ -397,7 +397,7 @@ const generateInternalMap = ({ position, candidates}) => {
 
     var scale = document.createElement('div')
     infoContainer.appendChild(mapContainer)
-    let scaleContainer = document.getElementById('scaleContainer')
+    let scaleContainer = document.getElementById(scaleContainerId)
     scaleContainer.innerHTML = ''
     scaleContainer.appendChild(scale)
     infoContainer.setAttribute('clase', 'row')
@@ -424,10 +424,12 @@ const generateInternalMap = ({ position, candidates}) => {
         let notInWinners = Object.values(candidates).filter( candidate => {
             return !Object.values(winners).some( winner => checkSameCandidate(winner, candidate))
         })
-        notInWinners.map( notWinner => {
-            let stepDiv = createScaleStep({ candidate: notWinner, color: NonWinnerColor })
-            scale.appendChild(stepDiv)
-        })
+        if (includeNonWinners) {
+            notInWinners.map(notWinner => {
+                let stepDiv = createScaleStep({ candidate: notWinner, color: NonWinnerColor })
+                scale.appendChild(stepDiv)
+            })
+        }
     }
     return infoContainer
 }
@@ -568,15 +570,33 @@ const competitorChange = ({competitor, add}) => {
     let prevMap = document.getElementById('dynamicMap')
     if (prevMap) { prevMap.remove()}
     if (Object.keys(contestants).length === 0) {
-        let map = generateInternalMap({ position, candidates: contestants })
+        let map = generateInternalMap({
+            position,
+            candidates: contestants,
+            includeNonWinners: true,
+            containerId: 'generalContainer',
+            scaleContainerId: 'scaleContainer',
+        })
         map.setAttribute('id', 'dynamicMap')
     }else if (Object.keys(contestants).length === 1) {
         let contestantKey =  Object.keys(contestants)[0]
         let contestant = contestants[contestantKey]
-        let map = generateMap({ position, votesOrParty: contestant.votesOrParty, subparty: contestant.name})
+        let map = generateMap({
+            position,
+            votesOrParty: contestant.votesOrParty,
+            subparty: contestant.name,
+            containerId: 'generalContainer',
+            scaleContainerId: 'scaleContainer',
+        })
         map.setAttribute('id', 'dynamicMap')
     } else if (Object.keys(contestants).length > 1) {
-        let map = generateInternalMap({ position, candidates: contestants })
+        let map = generateInternalMap({
+            position,
+            candidates: contestants,
+            includeNonWinners: true,
+            containerId: 'generalContainer',
+            scaleContainerId: 'scaleContainer'
+        })
         map.setAttribute('id', 'dynamicMap')
     }
 }
@@ -715,6 +735,43 @@ const init = () => {
     for (const key in contestants) {
         document.getElementById(key).checked = true
     }
+    generateInternalMap({
+        position: 'diputado',
+        containerId: 'MicroCentroContainer',
+        scaleContainerId: 'MicroCentroScaleContainer',
+        candidates: {
+            'ADELANTE': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "ADELANTE", nombreCandidato: "LIFSCHITZ ROBERTO MIGUEL" },
+            'JUNTOS': { votesOrParty: "JUNTOS" },
+            'VAMOS JUNTOS': { votesOrParty: "CAMBIEMOS", name: "VAMOS JUNTOS", nombreCandidato: "CHUMPITAZ FILIPONE GABRIEL FELIPE" },
+        },
+    })
+    generateInternalMap({
+        position: 'diputado',
+        containerId: 'estilosContainer',
+        scaleContainerId: 'estilosScaleContainer',
+        candidates: {
+            'SOMOS VIDA': { votesOrParty: "UNITE POR LA FAMILIA Y LA VIDA", name: "SOMOS VIDA", nombreCandidato: "GRANATA AMALIA IRIS SABINA" },
+            'UNIDAD SOCIAL Y POPULAR': { votesOrParty: "FRENTE SOCIAL Y POPULAR", name: "UNIDAD SOCIAL Y POPULAR", nombreCandidato: "DEL FRADE CARLOS ALFREDO" },
+        },
+    })
+    generateInternalMap({
+        position: 'intendente',
+        containerId: 'intendenteContainer',
+        scaleContainerId: 'intendenteScaleContainer',
+        candidates: {
+            'CAMBIEMOS': { votesOrParty: "CAMBIEMOS" },
+            'FRENTE PROGRESISTA CÍVICO Y SOCIAL': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL" },
+            'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "SUKERMAN ROBERTO" },
+        },
+    })
+    generateMap({
+        position: 'intendente',
+        containerId: 'monteverdeContainer',
+        scaleContainerId: 'monteverdeScaleContainer',
+        votesOrParty: 'PARA LA CIUDAD FUTURA',
+        subparty: 'UN FUTURO DIFERENTE'
+    })
+
 }
 init()
 
