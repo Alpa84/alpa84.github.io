@@ -60,6 +60,49 @@ let initialContestants = {
     'SUMAR': { votesOrParty: "JUNTOS", name: "SUMAR", nombreCandidato: "PEROTTI OMAR ANGEL" },
     'CAMBIEMOS': { votesOrParty: "CAMBIEMOS", name: "SUMAR", nombreCandidato: "CORRAL JOSE MANUEL" }
 }
+const contestantsToParams = ({contestants, position}) => {
+    let params = []
+    Object.values(contestants).map(contestant => {
+        let votesOrPartyIndex
+        let subpartyIndex
+        let votesOrParties = Object.keys(totals[position])
+        votesOrPartyIndex = votesOrParties.indexOf(contestant.votesOrParty)
+        if (contestant.name) {
+            let subpartyNames = Object.keys(totals[position][contestant.votesOrParty])
+            subpartyIndex = subpartyNames.indexOf(contestant.name)
+        } else {
+            subpartyIndex = 'None'
+        }
+        params.push(`${votesOrPartyIndex}-${subpartyIndex}`)
+    })
+    return `${position}&${params.join('_')}`
+}
+const paramsToContestants = ({params}) => {
+    try {
+        let position = params.split('&')[0]
+        let candidatesParams = params.split('&')[1].split('_')
+        let urlCandidates = {}
+        candidatesParams.map(candidateParams => {
+            let candidate = {}
+            let votesOrPartyIndex = candidateParams.split('-')[0]
+            let votesOrParty = Object.keys(totals[position])[parseInt(votesOrPartyIndex)]
+            candidate['votesOrParty'] = votesOrParty
+            let subpartyIndex = candidateParams.split('-')[1]
+            if (subpartyIndex !== 'None') {
+                let subpartyName = Object.keys(totals[position][votesOrParty])[parseInt(subpartyIndex)]
+                candidate['name'] = subpartyName
+                candidate['nombreCandidato'] = totals[position][votesOrParty][subpartyName].nombreCandidato
+            }
+            urlCandidates[getKey(candidate)] = candidate
+        })
+        return {
+            position,
+            contestants: urlCandidates,
+        }
+    } catch (error) {
+        return {}
+    }
+}
 
 const getVotes = ({school, position, votesOrParty, subparty}) => {
     let votes
@@ -426,7 +469,7 @@ document.getElementById('filterOutliers').addEventListener('change', () => {
 // }
 
 
-const generateSelector = ({options, placeholderId, onchange, id}) => {
+const generateSelector = ({options, placeholderId, onchange, id, selected}) => {
     let elem = document.getElementById(id)
     if (elem) { elem.remove()}
     let selectContainer = document.createElement('div')
@@ -437,10 +480,13 @@ const generateSelector = ({options, placeholderId, onchange, id}) => {
     select.setAttribute('class', 'form-control' )
     for (var i = 0; i < options.length; i++) {
         var opt = options[i];
-        var el = document.createElement("option");
+        var el = document.createElement("option")
         el.textContent = decode_utf8(opt);
         el.value = opt;
-        select.appendChild(el);
+        select.appendChild(el)
+        if (selected && selected === opt) {
+            el.selected = true
+        }
     }
     select.addEventListener('change', onchange)
     document.getElementById(placeholderId).appendChild(selectContainer)
@@ -501,6 +547,12 @@ const competitorChange = ({competitor, add}) => {
         }
     }
     let position = select.value
+    let params = contestantsToParams({position, contestants})
+    var url = window.location.href.split('?')[0]
+    let completeUrl = `${url}?${params}`
+    window.history.pushState({}, "", completeUrl)
+    document.getElementById('share').innerHTML = completeUrl
+
     let prevMap = document.getElementById('dynamicMap')
     if (prevMap) { prevMap.remove()}
     if (Object.keys(contestants).length === 0) {
@@ -626,18 +678,34 @@ const generateList = ({position}) => {
     })
     list.appendChild(clearButton)
 }
-let select = generateSelector({ options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event)=>  {
-    contestants = {}
-    competitorChange({ competitor: {}, add: false })
-    generateList({position: event.target.value})
-}})
-generateList({position: 'gobernador'})
 
-competitorChange({competitor: undefined, add:undefined})
+let select
+const init = () => {
+    let params = document.location.search.substring(1)
+    let urlData = paramsToContestants({params})
+    let position = 'gobernador'
+    if (urlData.contestants && Object.keys(urlData.contestants).length > 0) {
+        contestants = urlData.contestants
+        position = urlData.position
+    }
+    select = generateSelector({
+        options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event) => {
+            contestants = {}
+            competitorChange({ competitor: {}, add: false })
+            generateList({ position: event.target.value })
+        },
+        selected: position
+    })
+    generateList({ position })
 
-for (const key in contestants) {
-    document.getElementById(key).checked = true
+    competitorChange({ competitor: undefined, add: undefined })
+
+    for (const key in contestants) {
+        document.getElementById(key).checked = true
+    }
 }
+init()
+
 // Object.keys(totals).map(position => {
 //     Object.keys(totals[position]).map( votesOrParty => {
 //         if (totals[position][votesOrParty].count) {
