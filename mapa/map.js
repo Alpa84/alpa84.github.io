@@ -451,7 +451,7 @@ const createScaleStep = ({candidate, color }) => {
     circle.setAttribute("style", `color: ${color}; font-size: 40 `)
     return stepDiv
 }
-var positionsList = ['concejal', 'gobernador', 'diputado', 'intendente']
+var positionsList = ['concejal', 'gobernador', 'diputado', 'intendente', 'senador']
 document.getElementById('filterOutliers').addEventListener('change', () => {
     competitorChange({ competitor: {}, add: false })
 })
@@ -731,6 +731,10 @@ const init = () => {
         contestants = urlData.contestants
         position = urlData.position
     }
+    if (Object.values(contestants).length === 1) {
+        let newTitle = `${getLabel(Object.values(contestants)[0])}, mapa de resutados. Rosario`
+        document.querySelector('meta[property="og:title"]').setAttribute("content", newTitle);
+    }
     select = generateSelector({
         options: positionsList, placeholderId: 'competitorsListContainer', onchange: (event) => {
             contestants = {}
@@ -796,6 +800,20 @@ const init = () => {
             'IGUALDAD Y PARTICIPACION': { votesOrParty: "IGUALDAD Y PARTICIPACION", name: "IGUALDAD Y PARTICIPACION", nombreCandidato: "GIUSTINIANI RUBEN HECTOR" },
             'JUNTOS': { votesOrParty: "JUNTOS", name: "JUNTOS", nombreCandidato: "BUSATTO LEANDRO" },
             'UNITE POR LA FAMILIA Y LA VIDA': { votesOrParty: "UNITE POR LA FAMILIA Y LA VIDA", name: "UNITE POR LA FAMILIA Y LA VIDA", nombreCandidato: "GRANATA AMALIA IRIS SABINA" },
+        },
+    })
+    generateInternalMap({
+        position: 'senador',
+        containerId: 'senadoresContainer',
+        scaleContainerId: 'senadoresScaleContainer',
+        includeNonWinners: true,
+        candidates: {
+            'CAMBIEMOS': { votesOrParty: "CAMBIEMOS", name: "CAMBIEMOS", nombreCandidato: "ROSUA MARTIN PABLO" },
+            'FRENTE DE IZQUIERDA Y DE LOS TRABAJADORES': { votesOrParty: "FRENTE DE IZQUIERDA Y DE LOS TRABAJADORES", name: "FRENTE DE IZQUIERDA Y DE LOS TRABAJADORES", nombreCandidato: "VERGARA DANIELA JUDITH" },
+            'FRENTE PROGRESISTA CÍVICO Y SOCIAL': { votesOrParty: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", name: "FRENTE PROGRESISTA CÍVICO Y SOCIAL", nombreCandidato: "FEIN MONICA HAYDEE" },
+            'FRENTE SOCIAL Y POPULAR': { votesOrParty: "FRENTE SOCIAL Y POPULAR", name: "FRENTE SOCIAL Y POPULAR", nombreCandidato: "PERALTA FACUNDO GABRIEL" },
+            'JUNTOS': { votesOrParty: "JUNTOS", name: "JUNTOS", nombreCandidato: "LEWANDOWSKI MARCELO NESTOR" },
+            'UNITE POR LA FAMILIA Y LA VIDA': { votesOrParty: "UNITE POR LA FAMILIA Y LA VIDA", name: "UNITE POR LA FAMILIA Y LA VIDA", nombreCandidato: "MONTEDORO DORA RAQUEL MARIA DE ITATI" },
         },
     })
     // generateMap({
