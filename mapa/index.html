@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Geografía Política: Elecciones Generales 2019</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <meta property="og:locale" content="es_AR" />
+    <meta name="twitter:card" content="Un mapa de la política en Rosario">
+    <!-- You don't need to include these if you have OpenGraph tags -->
+    <meta name="twitter:image" content="https://alpa84.github.io/map/map_thumb.png">
+    <!-- Update your html tag to include the itemscope and itemtype attributes. -->
+    <meta name="description" content="Page description. No longer than 155 characters." />
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Geografía Política: Elecciones Generales 2019, Rosario">
+    <meta name="twitter:description" content="Un mapa de la política en Rosario">
+    <!-- Twitter summary card with large image must be at least 280x150px -->
+    <meta name="twitter:image:src" content="https://alpa84.github.io/map/map_thumb.png">
+    <!-- Open Graph data -->
+    <meta property="og:title" content="Geografía Política: Elecciones Generales 2019, Rosario" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://alpa84.github.io/map" />
+    <meta property="og:image" content="https://alpa84.github.io/map/map_thumb.png" />
+    <meta property="og:description" content="Un mapa de la política en Rosario" />
+    <meta property="og:site_name" content="Geografía Política" />
+    <meta property="article:published_time" content="2019-06-05T05:59:00+01:00" />
+    <meta property="article:modified_time" content="2019-06-05T19:08:47+01:00" />
+    <meta property="article:section" content="Geografía Política" />
+    <meta property="article:tag" content="Geografía Política" />
+
+
+
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Barlow&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <div class="container-fluid" id='all'>
+        <div>
+            <h2 class='title'> <b>Geografía Política</b> Elecciones Generales 2019</h2>
+            <h2>Elegí los candidatos para comparar quien tuvo más votos en cada local electoral.</h2>
+            <h2>Elegí un solo candidato para ver sus resultados en cada escuela.</h2>
+        </div>
+        <div class="row">
+            <div class="col-sm-6" id='generalContainer'>
+            </div>
+            <div class="col-sm-1" id='scaleContainer'>
+            </div>
+            <div class="col-sm-5" id='competitorsListContainer'>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-5" id='generalContainer'>
+                <input type="checkbox" name="" id="filterOutliers" checked> filtrar outliers</input>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div>
+            <h3>Para compartir este mapa:</h3>
+            <h3>
+                <a id='share'></a>
+                <!-- <span class="badge" id='share'></span> -->
+            </h3>
+        </div>
+        <br>
+        <br>
+        <h2>Algunas Miradas</h2>
+        <h4 id='gobernador'>Gobernador, Todos los candidatos</h4>
+        <div class="row">
+            <div class="col-sm-6" id='gobernadorContainer'>
+            </div>
+            <div class="col-sm-1" id='gobernadorScaleContainer'>
+            </div>
+            <div class="col-sm-5">
+                <h4></h4>
+                <div>
+                    <!-- Bonfatti se impuso en la zona céntrica de la ciudad, mientras que Perotti fue más fuerte en los barrios -->
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4 id='concejales'>Concejales, Todos los candidatos</h4>
+        <div class="row">
+            <div class="col-sm-6" id='concejalesContainer'>
+            </div>
+            <div class="col-sm-1" id='concejalesScaleContainer'>
+            </div>
+            <div class="col-sm-3">
+                <!-- <h4>Estilos Opuestos</h4>
+                <div>
+                    La ciudad queda dividida en dos si comparamos los resultados de Amalia Granata con los de Carlos Del
+                    Frade.
+                </div>
+                <div>
+
+                </div> -->
+            </div>
+        </div>
+        <br>
+        <h4 id='intendente'>Intendente, Todos los candidatos</h4>
+        <div class="row">
+            <div class="col-sm-6" id='intendenteContainer'>
+            </div>
+            <div class="col-sm-1" id='intendenteScaleContainer'>
+            </div>
+            <div class="col-sm-4">
+                <!-- <h4>Mira que ironía, querida</h4>
+                <div>
+                    Para el cargo de intendente los votos combinados de Cambiemos sólo prevalecieron en un local
+                    electoral. Es la Facutad de Humanidades y Artes.
+                </div>
+                <div>
+                    Esta tendencia <a href="http://geografiapolitica.herokuapp.com/" target="_blank">se repitió
+                        consistentemente</a> en las PASO 2015
+                </div> -->
+                <div>
+
+                </div>
+            </div>
+        </div>
+        <br>
+        <h4 id='diputados'>Diputados, Todos los candidatos</h4>
+        <div class="row">
+            <div class="col-sm-6" id='diputadosContainer'>
+            </div>
+            <div class="col-sm-1" id='diputadosScaleContainer'>
+            </div>
+            <div class="col-sm-3">
+                <!-- <h4>The North Remebers</h4>
+                <div>
+                    Para el cargo de intendente Tomás Monteverde tuvo más fuerza en Nuevo Alberdi.
+                </div>
+                <div>
+                    También obtuvo buenos resultados en el barrio Luis Agote, donde está la escuela que lo vió crecer.
+                </div>
+                <div>
+
+                </div> -->
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>Metodología:</h4>
+                    <div>
+                        Se sumaron los resultados del escrutinio provisorio de las elecciones generales de 2019 de cada
+                        candidato de todas
+                        las
+                        mesas de cada local electoral.
+                        Se relevó la ubicación geográfica de los 298 locales electorales por medios automatizados y se
+                        revisó cada uno de
+                        estos
+                        resultados.
+                        <a href="https://elecciones.santafe.gob.ar/mesaXml/gobernador/3687/N">Fuente</a>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>Visualización de los resultados:</h4>
+                    <div>
+                        Cada círculo en el mapa está ubicado de acuerdo al domicilio de cada local electoral en la
+                        ciudad. El color de cada
+                        círculo representa la proporción de votos que obtuvo cada candidato comparado con el total de
+                        votos efectuados en ese
+                        local electoral. La referencia de los colores de los resultados por partido va del blanco para
+                        los resultados más bajos
+                        de cada candidato, pasando por el rosa, el rojo hasta llegar al rojo oscuro para los resultados
+                        más altos. Se representan
+                        los valores relativos de los resultados (el porcentaje del total) y no a los absolutos, para
+                        evitar que los resultados
+                        por zona varíen en función a la cantidad total de votos de cada escuela.
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-sm-6" id='generalContainer'>
+                    <h4>
+                        By: <b class='bold'>Alejandro Panza</b> alejandrofpanza@gmail.com
+                    </h4>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+
+    </div>
+    <script src="schools.js"></script>
+    <script src="totalsBySchoolGenerales.js"></script>
+    <script src="map.js"></script>
+</body>
+
+</html>

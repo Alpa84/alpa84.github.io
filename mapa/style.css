@@ -1,0 +1,23 @@
+
+body {
+  color: #333333;
+  font-family: 'Barlow', sans-serif;
+}
+.bold {
+  font-weight: bolder;
+}
+.circle {
+  font-size: 1.8em;
+}
+.title {
+  font-size: 5rem;
+  letter-spacing: -1px;
+}
+.subpartyLabel {
+  transform: translateX(4rem)
+}
+#share {
+  display: flex;
+  overflow-x: auto;
+}
+input[type="checkbox"]:checked+span{background:rgb(207, 207, 207);}​
