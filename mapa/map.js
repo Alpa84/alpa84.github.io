@@ -733,6 +733,7 @@ const init = () => {
     }
     if (Object.values(contestants).length === 1) {
         let newTitle = `${getLabel(Object.values(contestants)[0])}, mapa de resutados. Rosario`
+        document.title = newTitle
         document.querySelector('meta[property="og:title"]').setAttribute("content", newTitle);
     }
     select = generateSelector({
