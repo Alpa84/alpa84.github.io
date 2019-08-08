@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <title>El celular como instrumento</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        body {
+            margin: 0em;
+            padding: 0em;
+        }
+        div {
+            margin: 0em;
+            padding: 0em;
+        }
+        .octaveContainer {
+            width: 30vw;
+            float:left;
+            padding: 0px;
+        }
+        .key {
+            padding: 0em;
+            height: calc(90vh / 12);
+            font: 15px;
+            background: white;
+            border: 1px solid black;
+        }
+        .white {
+            background: white;
+        }
+        .black {
+            background: gray;
+        }
+    </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.9/Tone.js"></script>
+<body>
+    <div id='reading'></div>
+    whami <input type="checkbox" id="whami" onclick="toggleWhami()">
+    <div id='container'></div>
+<script src='instr.js'></script>
+</body>
+
+</html>
+
