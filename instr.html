@@ -43,23 +43,7 @@
     const toggleWhami = () =>{
         whamiOn = !whamiOn
     }
-    const generateKey = (pitch) => {
-        var vibrato = new Tone.Vibrato().toMaster()
-        // var vibrato = new Tone.Vibrato().connect(chorus)
-        return {
-            note: pitch,
-            synth: new Tone.AMSynth({
-                // oscillator: { type: 'sawtooth' },
-                envelope: { decay: 0}
-             }).toMaster(),
-            //  }).connect(vibrato),
-            // vibrato: vibrato
-        }
-    }
 
-    // var delay = new Tone.FeedbackDelay('8n', 0.3).toMaster()
-    // var wah = new Tone.Filter(300, 'bandpass', -24).connect(delay)
-    // var chorus = new Tone.Chorus(4, 2.5, 0.5).connect(wah)
 
     var octave = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     var firstOctave = 3
@@ -70,12 +54,7 @@
             notes.push(note  + index)
         });
     }
-    console.log(notes)
 
-    var mapping = {}
-    for (const pitch of notes) {
-        mapping[pitch] = generateKey(pitch)
-    }
     let noteIndex = 0
     var reversed = octave.reverse()
     for (let index = firstOctave; index < lastOctave; index++) {
@@ -95,54 +74,51 @@
             document.getElementById(octaveContainer.id ).appendChild(el)
         });
     }
-    // for (const pitch of notes) {
-    //     var el = document.createElement('div')
-    //     el.innerHTML = pitch
-    //     el.id = pitch
-    //     el.className = 'key'
-    //     document.getElementById('container').appendChild(el)
-    // }
-    var filter = new Tone.Filter(200, "bandpass")
-    var tpCache = new Array();
+    let peaking = new Tone.Filter(0, "peaking").toMaster()
+    var bandWidth = new Tone.Filter({
+            "rolloff": -48,
+            "frequency": 0,
+            "Q": 2,
+        }).connect(peaking)
+    // var effect = new Tone.AutoWah().toMaster()
+    // var effect = new Tone.Distortion(0.8).connect(wah)
+    const POLYPHONY = 1
+    var synth = new Tone.PolySynth(POLYPHONY, Tone.Synth, {
+        oscillator: {
+            type: 'triangle'
+        }
+        ,
+        envelope: {
+            attack: 0.5,
+            decay: 0.1,
+            sustain: 0.3,
+            release: 1
+        }
+    }).connect(bandWidth)
+
+    var notesMapping = {}
+    for (const pitch of notes) {
+        notesMapping[pitch] = {}
+    }
+
+
+
+
     function startNote(ev) {
-
-        var place = mapping[ev.target.id]
-        place.synth.detune.value = 0
-        place.startedX = ev.targetTouches[0].clientX
-        place.startedY = ev.targetTouches[0].clientY
-        place.synth.triggerAttack(place.note)
-
-
-        switch (ev.targetTouches.length) {
-            case 1:
-                // Single tap`
-                ev.target.style.background = "yellow";
-                break;
-            case 2:
-                // Two simultaneous touches
-                ev.target.style.background = "pink";
-                break;
-            default:
-                // More than two simultaneous touches
-                ev.target.style.background = "lightblue";
-        }
-    }
-
-    function start_handler(ev) {
-        // If the user makes simultaneious touches, the browser will fire a
-        // separate touchstart event for each touch point. Thus if there are
-        // three simultaneous touches, the first touchstart event will have
-        // targetTouches length of one, the second event will have a length
-        // of two, and so on.
         ev.preventDefault();
-        // Cache the touch points for later processing of 2-touch pinch/zoom
-        // if (ev.targetTouches.length == 2) {
-        for (var i = 0; i < ev.targetTouches.length; i++) {
-            tpCache.push(ev.targetTouches[i]);
+        ev.target.style.background = "yellow";
+        let noteName = ev.target.id
+        synth.triggerAttack(noteName)
+        let voiceIndex = synth._getClosestVoice(undefined, noteName).index
+        notesMapping[noteName] = {
+            voiceIndex : voiceIndex ,
+            start: {
+                x: ev.targetTouches[0].clientX,
+                y: ev.targetTouches[0].clientY,
+            }
         }
-        // }
-        startNote(ev);
     }
+
     function move_handler(ev) {
         // Note: if the user makes more than one "simultaneous" touches, most browsers
         // fire at least one touchmove event and some will fire several touchmoves.
@@ -151,28 +127,43 @@
         // This function sets the target element's border to "dashed" to visualy
         // indicate the target received a move event.
         //
+        let noteName = ev.target.id
         var threshold = 20
-        var place = mapping[ev.target.id]
-        var vibrate = place.startedX - ev.targetTouches[0].clientX
-        var movedY = place.startedY - ev.targetTouches[0].clientY
+        let mappedNote = notesMapping[noteName]
+        let voiceIndex = mappedNote.voiceIndex
+
+
+        var vibrate = mappedNote.start.x - ev.targetTouches[0].clientX
+        var movedY = mappedNote.start.y - ev.targetTouches[0].clientY
         // place.synth.vibrate.value = vibrate
         if(!isNaN(movedY) && Math.abs(movedY) > threshold){
+
+
             // place.vibrato.frequency.value = vibrate * 5 * 0.009 * 2
             // place.vibrato.depth.value = vibrate * 0.1  * 0.009 * 2
             if (whamiOn) {
 
             } else {
+                let noteFreq = Tone.Frequency(noteName).valueOf()
+                // console.log('noteFreq', noteFreq)
+                let synthVoice = synth.voices.find(voice => {
+                    let timeline = voice.frequency._events._timeline
+                    console.log(timeline[timeline.length - 1])
+                    return timeline[timeline.length - 1].value === noteFreq
+                })
+                if (synthVoice) {
+                    console.log('not undef!')
+                }
                 if (movedY > 0) {
-                    place.synth.detune.value = movedY - threshold
+                    synthVoice.detune.value = movedY - threshold
                 } else {
-                    place.synth.detune.value = movedY + threshold
+                    synthVoice.detune.value = movedY + threshold
                 }
             }
         }
     }
     function end_handler(ev) {
-        var place = mapping[ev.target.id]
-        place.synth.triggerRelease()
+        synth.triggerRelease(ev.target.id)
         ev.preventDefault();
         if (ev.targetTouches.length == 0) {
             // Restore background and border to original values
@@ -187,8 +178,8 @@
     function set_handlers(name) {
         // Install event handlers for the given element
         var el = document.getElementById(name);
-        el.ontouchstart = start_handler;
-        el.ontouchmove = move_handler;
+        el.ontouchstart = startNote
+        // el.ontouchmove = move_handler;
         // Use same handler for touchcancel and touchend
         el.ontouchcancel = end_handler;
         el.ontouchend = end_handler;
@@ -198,39 +189,37 @@
             set_handlers(pitch);
         }
     }
-    const detuneKeys = (cents) =>{
-        for (const key in mapping) {
-            // mapping[key].synth.detune.value = cents
-            mapping[key].synth.detune.rampTo(cents, 0.4)
-            // var octaveUp = Tone.Frequency(key).toFrequency()  * 2
-            // mapping[key].synth.frequency.rampTo(octaveUp, 0.4)
-        }
+    const detuneKeys = (cents, time) =>{
+        synth.detune.rampTo(cents, time)
     }
-    // setInterval(() => {
-    //     detuneKeys(100)
-    // }, 2000);
+
 
     let accelerometer = new Accelerometer({ frequency: 60 });
     var reading = document.getElementById('reading')
     var up = false
     accelerometer.addEventListener('reading', e => {
         var sensorMin = 4
-        // var sensorMin = 4
         var sensorMax = 4.2
         var adjusted = (accelerometer.y - sensorMin) / (sensorMax - sensorMin)
         var limited = Math.min(Math.max(adjusted, 0), 1)
         reading.innerHTML = limited
         if (whamiOn) {
             if (!up && limited === 1) {
+                document.body.style.background = 'red'
                 up = true
-                detuneKeys(limited * 1200)
+                detuneKeys(limited * 1200, 0.4)
             }
             if (up && limited === 0) {
+                document.body.style.background = 'white'
                 up = false
-                detuneKeys(limited * 1200)
+                detuneKeys(limited * 1200, 0)
             }
         } else {
-            // wah.frequency.value = (accelerometer.y + 5) / 2 * 700 + 300
+            let tilt = (accelerometer.y + 5) / 2 * 700 + 300
+            peaking.frequency.value = tilt
+            bandWidth.frequency.value = tilt
+            let hue = accelerometer.y * 10
+            document.body.style.background = `hsl(${hue},100%,50%)`;
         }
     })
 
