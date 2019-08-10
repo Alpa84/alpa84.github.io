@@ -5,8 +5,8 @@ let chordStructures = {
 }
 
 const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const FIRST_OCTAVE = 5
-const LAST_OCTAVE = 6
+const FIRST_OCTAVE = 4
+const LAST_OCTAVE = 5
 const POLYPHONY = 4
 const SLIDER_RESOLUTION = 101
 
@@ -17,8 +17,8 @@ const SensorMax = 4.2
 // globals
 
 let synth
-let fundamental
-// let fundamental = 'C'
+// let fundamental
+let fundamental = 'A4'
 let alteration
 // let alteration = 'min'
 let position
@@ -26,14 +26,14 @@ let stringPositions
 let sliderElement = document.getElementById('slider')
 
 
-var synth2 = new Tone.Synth().toMaster()
-synth2.triggerAttackRelease("C4", "8n")
-
 const createSynth = () => {
-    return new Tone.PolySynth(POLYPHONY, Tone.Synth).toMaster()
+    var synthCreated = new Tone.Synth().toMaster()
+    // return new Tone.PolySynth(POLYPHONY, Tone.Synth).toMaster()
+    return synthCreated
 }
 const addPressedBehaviour = (element, isKey) => {
     element.ontouchstart = (ev) => {
+        Tone.context.resume()
         ev.preventDefault()
         if (isKey) {
             fundamental = element.id
@@ -53,10 +53,10 @@ const addPressedBehaviour = (element, isKey) => {
 const pressedEnd = (element, isKey) => {
     if ( isKey) {
         colorKeys(element)
-        fundamental = null
+        // fundamental = null
     } else {
         element.style.background = "white"
-        alteration = null
+        // alteration = null
     }
 }
 const colorKeys = (keyElement) => {
@@ -100,24 +100,24 @@ const generateAlterations = () => {
 
 const positionChange = (newPosition) => {
     // document.getElementById('reading').innerHTML = newPosition
-    let chordStructure
-    let chordNotes
-    if (fundamental) {
-        if (alteration) {
-            chordStructure = chordStructures[alteration]
-        } else {
-            chordStructure = chordStructures.MAJ
-        }
-        chordNotes = Tone.Frequency(fundamental + FIRST_OCTAVE).harmonize(chordStructure)
 
-        stringPositions.forEach((stringPosition, index) => {
-            if (stringPosition > position && stringPosition < newPosition || stringPosition > newPosition && stringPosition < position) {
-                let stringNote = chordNotes[index]
-                synth2.triggerAttackRelease(stringNote, "8n")
-                console.log(stringNote)
+    stringPositions.forEach((stringPosition, index) => {
+        if (stringPosition > position && stringPosition < newPosition || stringPosition > newPosition && stringPosition < position) {
+            let chordStructure
+            let chordNotes
+            if (fundamental) {
+                if (alteration) {
+                    chordStructure = chordStructures[alteration]
+                } else {
+                    chordStructure = chordStructures.MAJ
+                }
+                chordNotes = Tone.Frequency(fundamental ).harmonize(chordStructure)
             }
-        })
-    }
+            let stringNote = chordNotes[index]
+            synth.triggerAttackRelease(stringNote, "8n")
+            console.log(stringNote)
+        }
+    })
     position = newPosition
 }
 
@@ -144,7 +144,9 @@ for (let stringIndex = 0; stringIndex < POLYPHONY ; stringIndex++) {
 }
 
 
+// synth = new Tone.Synth().toMaster()
 synth = createSynth()
+synth.triggerAttackRelease('C5', '8n')
 generateKeyboard()
 generateAlterations()
 sliderElement.oninput = () => {
@@ -152,5 +154,11 @@ sliderElement.oninput = () => {
     positionChange(newPosition)
 }
 setAccel()
-
+document.getElementById('start').addEventListener(
+    "mousedown", function () {
+        mouse_IsDown = true;
+        if (Tone.context.state !== 'running') {
+            Tone.context.resume();
+        }
+    })
 
