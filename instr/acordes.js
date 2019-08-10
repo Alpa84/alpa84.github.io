@@ -29,7 +29,8 @@ let sliderElement = document.getElementById('slider')
 const createSynth = () => {
     var synthCreated = new Tone.Synth({
         oscillator: {
-            partials: [0.3, 0, 0.6, 0, 0.9],
+            // partials: [0.3, 0, 0.6, 0, 0.9],
+            type: 'square',
         },
         envelope: {
             attack: 0.01,
