@@ -1,12 +1,12 @@
 let chordStructures = {
     MAJ : [0, 4, 7, 12],
     min : [0, 3, 7, 12],
-    MAJ_7 : [0, 3, 7, 10],
+    MAJ_7 : [0, 4, 7, 10],
 }
+let NOTE_DURATION = "4n"
 
 const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const FIRST_OCTAVE = 4
-const LAST_OCTAVE = 5
 const POLYPHONY = 4
 const SLIDER_RESOLUTION = 101
 
@@ -16,7 +16,7 @@ const SensorMax = 4.2
 
 // globals
 
-let synth
+let synths = []
 // let fundamental
 let fundamental = 'A4'
 let alteration
@@ -27,8 +27,18 @@ let sliderElement = document.getElementById('slider')
 
 
 const createSynth = () => {
-    var synthCreated = new Tone.Synth().toMaster()
-    // return new Tone.PolySynth(POLYPHONY, Tone.Synth).toMaster()
+    var synthCreated = new Tone.Synth({
+        oscillator: {
+            partials: [0.3, 0, 0.6, 0, 0.9],
+        },
+        envelope: {
+            attack: 0.01,
+            decay: 3,
+            sustain: 0,
+            release: 1.2,
+        }
+    }
+).toMaster()
     return synthCreated
 }
 const addPressedBehaviour = (element, isKey) => {
@@ -37,8 +47,8 @@ const addPressedBehaviour = (element, isKey) => {
         ev.preventDefault()
         if (isKey) {
             fundamental = element.id
+            alteration = element.dataset.alteration
         } else {
-            alteration = element.id
         }
         element.style.background = "yellow"
     }
@@ -70,21 +80,22 @@ const colorKeys = (keyElement) => {
 
 const generateKeyboard = () => {
     let reversed = OCTAVE.reverse()
-    for (let index = FIRST_OCTAVE; index < LAST_OCTAVE; index++) {
+    ALTERATIONS.forEach((alteration, index) => {
         let octaveContainer = document.createElement('div')
         octaveContainer.id = 'octave' + index
         octaveContainer.className = 'octaveContainer'
         document.getElementById('container').appendChild(octaveContainer)
         reversed.forEach(note => {
             let el = document.createElement('div')
-            el.innerHTML = note + index
-            el.id = note + index
+            el.innerHTML = `${note}${FIRST_OCTAVE} ${alteration}`
+            el.id = note + FIRST_OCTAVE
+            el.dataset.alteration = alteration
             colorKeys(el)
             el.className = 'key'
             addPressedBehaviour(el, true)
             document.getElementById(octaveContainer.id).appendChild(el)
         })
-    }
+    })
 }
 const generateAlterations = () => {
     ALTERATIONS.forEach(alteration => {
@@ -114,7 +125,7 @@ const positionChange = (newPosition) => {
                 chordNotes = Tone.Frequency(fundamental ).harmonize(chordStructure)
             }
             let stringNote = chordNotes[index]
-            synth.triggerAttackRelease(stringNote, "8n")
+            synths[index].triggerAttackRelease(stringNote, NOTE_DURATION)
             console.log(stringNote)
         }
     })
@@ -125,7 +136,7 @@ const setAccel = () => {
     let accelerometer = new Accelerometer({ frequency: 60 });
     let reading = document.getElementById('reading')
     accelerometer.addEventListener('reading', e => {
-        let adjusted = (accelerometer.y + 10 ) / 20 * 100
+        let adjusted = (accelerometer.x + 10 ) / 20 * 100
         reading.innerHTML = adjusted
         // let adjusted = (accelerometer.y - SensorMin) / (SensorMax - SensorMin)
         // let limited = Math.min(Math.max(adjusted, 0), 1)
@@ -140,15 +151,19 @@ stringPositions = []
 for (let stringIndex = 0; stringIndex < POLYPHONY ; stringIndex++) {
     let unit = SLIDER_RESOLUTION / (POLYPHONY + 2)
     let stringPosition =   unit * stringIndex  + unit
+    stringPosition = stringPosition / 100 * 25 + 60
     stringPositions.push(stringPosition)
 }
 
 
 // synth = new Tone.Synth().toMaster()
-synth = createSynth()
-synth.triggerAttackRelease('C5', '8n')
+for (let index = 0; index < 4; index++) {
+    synths.push(createSynth())
+}
+
+synths[0].triggerAttackRelease('C5', '4n')
 generateKeyboard()
-generateAlterations()
+// generateAlterations()
 sliderElement.oninput = () => {
     let newPosition = parseInt(sliderElement.value)
     positionChange(newPosition)
