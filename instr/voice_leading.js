@@ -23,7 +23,7 @@ const VoicesRange = [
     { min: 18, max: 30}, // constraalto
     { min: 25, max: 39}, // soprano
 ]
-const CHORD_TONIC_EXAMPLE = 7
+const CHORD_TONIC_EXAMPLE = 0
 const ALTERATION_EXAMPLE = 'MAJ'
 let tonicOfChord = CHORD_TONIC_EXAMPLE
 
@@ -89,8 +89,6 @@ console.log(fundamental)
 chord_under_construction.push(fundamental)
 let chord_notes = create_chord_notes(fundamental, ALTERATION_EXAMPLE)
 let chord_notes_names = chord_notes.map(note_number_to_name)
-console.log(chord_notes_names)
-
 
 const generateAllPossibleChords = (chord_progress) => {
     if (chord_progress.length === VoicesRange.length) {
@@ -104,7 +102,21 @@ const generateAllPossibleChords = (chord_progress) => {
         })
     }
 }
+const has_struct_interval = (chord, interval, fundamental) => {
+    return chord.some( note => (note - fundamental) % 12  === interval )
+}
 
+const filter_without_chord_notes = (chords, fundamental, alteration) => {
+    return chords.filter( chord => {
+        let structure_intervals = ChordStructures[alteration].slice()
+        structure_intervals.shift() // we know it already has the fundamental
+        return structure_intervals.every( interval => {
+            return has_struct_interval(chord, interval, fundamental)
+        } )
+    })
+}
 generateAllPossibleChords([fundamental])
 console.log( chordDeposit.map(chord => chord.map(note_number_to_name)))
+chordDeposit = filter_without_chord_notes(chordDeposit, fundamental, ALTERATION_EXAMPLE)
+console.log(chordDeposit.map(chord => chord.map(note_number_to_name)))
 
