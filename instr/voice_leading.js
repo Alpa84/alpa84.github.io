@@ -12,6 +12,7 @@ const NoteNumbers = {
     10: 'A#',
     11: 'B',
 }
+const forbidden_parallel_intervals = [7, 12]
 const ChordStructures = {
     MAJ: [0, 4, 7],
     min: [0, 3, 7],
@@ -23,9 +24,10 @@ const VoicesRange = [
     { min: 18, max: 30}, // constraalto
     { min: 25, max: 39}, // soprano
 ]
-const CHORD_TONIC_EXAMPLE = 0
+const CHORD_TONIC_EXAMPLE = 7
 const ALTERATION_EXAMPLE = 'MAJ'
 let tonicOfChord = CHORD_TONIC_EXAMPLE
+const EXAMPLE_PREVIOUS_CHORD = [12 , 16, 19, 28]
 
 // globals
 let chord_under_construction = []
@@ -118,5 +120,47 @@ const filter_without_chord_notes = (chords, fundamental, alteration) => {
 generateAllPossibleChords([fundamental])
 console.log( chordDeposit.map(chord => chord.map(note_number_to_name)))
 chordDeposit = filter_without_chord_notes(chordDeposit, fundamental, ALTERATION_EXAMPLE)
+console.log('with chord notes')
 console.log(chordDeposit.map(chord => chord.map(note_number_to_name)))
 
+
+const findIntervalInstances = (chord, interval) => {
+    let bottom_voice_index = 0
+    let voices_with_interval = []
+    while (true) {
+        for (bottom_voice_index; bottom_voice_index < chord.length - 1; bottom_voice_index++) {
+            let bottom_voice = chord[bottom_voice_index]
+            for (let top_voice_index = bottom_voice_index + 1; top_voice_index < chord.length; top_voice_index++) {
+                let top_voice = chord[top_voice_index]
+                if ((top_voice - bottom_voice)% 12 === interval % 12) {
+                    voices_with_interval.push([bottom_voice_index, top_voice_index])
+                }
+            }
+        }
+        bottom_voice_index += 1
+        if (bottom_voice_index > chord.length - 1) {
+            break
+        }
+    }
+    return voices_with_interval
+}
+
+const filter_parallel_interval_movement = (forbidden_interval, chords) =>{
+    let interval_instances = findIntervalInstances(EXAMPLE_PREVIOUS_CHORD, forbidden_interval)
+    return chords.filter( chord => {
+        let has_parallel = interval_instances.some(interval => {
+            let is_parallel = chord[interval[1]] - chord[interval[0]] === forbidden_interval
+            if (is_parallel) {
+                console.log(`${EXAMPLE_PREVIOUS_CHORD.map(note_number_to_name)} has a parallel ${forbidden_interval}  with ${chord.map(note_number_to_name)}`)
+                console.log([EXAMPLE_PREVIOUS_CHORD[interval[0]], EXAMPLE_PREVIOUS_CHORD[interval[1]]].map(note_number_to_name), ' to ', [chord[interval[0]], chord[interval[1]]].map(note_number_to_name))
+                console.log('------------')
+            }
+            return is_parallel
+        })
+        return !has_parallel
+    })
+}
+
+chordDeposit = filter_parallel_interval_movement(12, chordDeposit)
+chordDeposit = filter_parallel_interval_movement(7, chordDeposit)
+console.log(chordDeposit.map(chord => chord.map(note_number_to_name)))
