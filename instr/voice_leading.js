@@ -12,7 +12,7 @@ const NoteNumbers = {
     10: 'A#',
     11: 'B',
 }
-const forbidden_parallel_intervals = [7, 12]
+const ForbiddenParallelIntervals = [7, 12]
 const ChordStructures = {
     MAJ: [0, 4, 7],
     min: [0, 3, 7],
@@ -27,14 +27,15 @@ const VoicesRange = [
 const CHORD_TONIC_EXAMPLE = 7
 const ALTERATION_EXAMPLE = 'MAJ'
 let tonicOfChord = CHORD_TONIC_EXAMPLE
-const EXAMPLE_PREVIOUS_CHORD = [12 , 16, 19, 28]
+const EXAMPLE_PREVIOUS_CHORD = [12 , 29, 28, 31]
 
 // globals
-let chord_under_construction = []
-let voice_tried_positions = [0,0,0]
+let chordUnderConstruction = []
+let VoiceTriedPositions = [0,0,0]
 let chordDeposit = []
+let chordScores = []
 
-const find_fundamental = (tonicOfChord) =>{
+const findFundamental = (tonicOfChord, prevChord) =>{
     let candidate = VoicesRange[0].min
     while (true) {
         if( candidate % 12 === tonicOfChord) {
@@ -50,117 +51,202 @@ const find_fundamental = (tonicOfChord) =>{
     return candidate
 }
 
-const note_number_to_name = (note_number) => {
-    let octave = Math.floor(note_number / 12)
-    let note_name = NoteNumbers[note_number % 12]
-    return `${note_name}${octave}`
+const noteNumberToName = (noteNumber) => {
+    let octave = Math.floor(noteNumber / 12)
+    let noteName = NoteNumbers[noteNumber % 12]
+    return `${noteName}${octave}`
 }
 
 
 
-const create_chord_notes = (fundamental, alteration) => {
-    let chord_notes = []
-    let structure_index = 1 // intentionally skipping the fundamental
-    let octave_index = 0
-    let chord_structure = ChordStructures[alteration]
+const createChordNotes = (fundamental, alteration) => {
+    let chordNotes = []
+    let structureIndex = 1 // intentionally skipping the fundamental
+    let octaveIndex = 0
+    let chordStructure = ChordStructures[alteration]
     while (true) {
-        let new_chord_note = (octave_index * 12) + fundamental + chord_structure[structure_index]
-        if (new_chord_note > VoicesRange[3].max) {
+        let newChordNote = (octaveIndex * 12) + fundamental + chordStructure[structureIndex]
+        if (newChordNote > VoicesRange[3].max) {
             break
         } else {
-            chord_notes.push(new_chord_note)
+            chordNotes.push(newChordNote)
         }
-        if (structure_index >= chord_structure.length - 1) {
-            structure_index = 0
-            octave_index += 1
+        if (structureIndex >= chordStructure.length - 1) {
+            structureIndex = 0
+            octaveIndex += 1
         } else {
-            structure_index += 1
+            structureIndex += 1
         }
     }
-    return chord_notes
+    return chordNotes
 }
 
-const find_voice_possible_notes = (voice_index, chord_notes, chord_progress) => {
-    let max = VoicesRange[voice_index].max
-    let min = Math.max(VoicesRange[voice_index].min, chord_progress[chord_progress.length -1 ])
-    return chord_notes.filter( note => note >= min && note <= max)
+const findVoicePossibleNotes = (voiceIndex, chordNotes, chordProgress) => {
+    let max = VoicesRange[voiceIndex].max
+    let min = Math.max(VoicesRange[voiceIndex].min, chordProgress[chordProgress.length -1 ])
+    return chordNotes.filter( note => note >= min && note <= max)
 }
 
-let fundamental = find_fundamental(tonicOfChord)
+let fundamental = findFundamental(tonicOfChord, EXAMPLE_PREVIOUS_CHORD)
 console.log(fundamental)
-chord_under_construction.push(fundamental)
-let chord_notes = create_chord_notes(fundamental, ALTERATION_EXAMPLE)
-let chord_notes_names = chord_notes.map(note_number_to_name)
+chordUnderConstruction.push(fundamental)
+let chordNotes = createChordNotes(fundamental, ALTERATION_EXAMPLE)
+let chordNotesNames = chordNotes.map(noteNumberToName)
 
-const generateAllPossibleChords = (chord_progress) => {
-    if (chord_progress.length === VoicesRange.length) {
-        chordDeposit.push(chord_progress)
+const generateAllPossibleChords = (chordProgress) => {
+    if (chordProgress.length === VoicesRange.length) {
+        chordDeposit.push(chordProgress)
     } else {
-        let possible_notes = find_voice_possible_notes(chord_progress.length, chord_notes, chord_progress)
-        possible_notes.forEach(possible_note => {
-            let next = chord_progress.slice()
-            next.push(possible_note)
+        let possibleNotes = findVoicePossibleNotes(chordProgress.length, chordNotes, chordProgress)
+        possibleNotes.forEach(possibleNote => {
+            let next = chordProgress.slice()
+            next.push(possibleNote)
             generateAllPossibleChords(next)
         })
     }
 }
-const has_struct_interval = (chord, interval, fundamental) => {
+const hasStructInterval = (chord, interval, fundamental) => {
     return chord.some( note => (note - fundamental) % 12  === interval )
 }
 
-const filter_without_chord_notes = (chords, fundamental, alteration) => {
+const filterWithoutChordNotes = (chords, fundamental, alteration) => {
     return chords.filter( chord => {
-        let structure_intervals = ChordStructures[alteration].slice()
-        structure_intervals.shift() // we know it already has the fundamental
-        return structure_intervals.every( interval => {
-            return has_struct_interval(chord, interval, fundamental)
+        let structureIntervals = ChordStructures[alteration].slice()
+        structureIntervals.shift() // we know it already has the fundamental
+        return structureIntervals.every( interval => {
+            return hasStructInterval(chord, interval, fundamental)
         } )
     })
 }
 generateAllPossibleChords([fundamental])
-console.log( chordDeposit.map(chord => chord.map(note_number_to_name)))
-chordDeposit = filter_without_chord_notes(chordDeposit, fundamental, ALTERATION_EXAMPLE)
+console.log( chordDeposit.map(chord => chord.map(noteNumberToName)))
+chordDeposit = filterWithoutChordNotes(chordDeposit, fundamental, ALTERATION_EXAMPLE)
 console.log('with chord notes')
-console.log(chordDeposit.map(chord => chord.map(note_number_to_name)))
+console.log(chordDeposit.map(chord => chord.map(noteNumberToName)))
 
 
 const findIntervalInstances = (chord, interval) => {
-    let bottom_voice_index = 0
-    let voices_with_interval = []
+    let bottomVoiceIndex = 0
+    let voicesWithInterval = []
     while (true) {
-        for (bottom_voice_index; bottom_voice_index < chord.length - 1; bottom_voice_index++) {
-            let bottom_voice = chord[bottom_voice_index]
-            for (let top_voice_index = bottom_voice_index + 1; top_voice_index < chord.length; top_voice_index++) {
-                let top_voice = chord[top_voice_index]
-                if ((top_voice - bottom_voice)% 12 === interval % 12) {
-                    voices_with_interval.push([bottom_voice_index, top_voice_index])
+        for (bottomVoiceIndex; bottomVoiceIndex < chord.length - 1; bottomVoiceIndex++) {
+            let bottomVoice = chord[bottomVoiceIndex]
+            for (let topVoiceIndex = bottomVoiceIndex + 1; topVoiceIndex < chord.length; topVoiceIndex++) {
+                let topVoice = chord[topVoiceIndex]
+                if ((topVoice - bottomVoice)% 12 === interval % 12) {
+                    voicesWithInterval.push([bottomVoiceIndex, topVoiceIndex])
                 }
             }
         }
-        bottom_voice_index += 1
-        if (bottom_voice_index > chord.length - 1) {
+        bottomVoiceIndex += 1
+        if (bottomVoiceIndex > chord.length - 1) {
             break
         }
     }
-    return voices_with_interval
+    return voicesWithInterval
 }
 
-const filter_parallel_interval_movement = (forbidden_interval, chords) =>{
-    let interval_instances = findIntervalInstances(EXAMPLE_PREVIOUS_CHORD, forbidden_interval)
+const filterParallelIntervalMovement = (forbiddenInterval, chords) =>{
+    let intervalInstances = findIntervalInstances(EXAMPLE_PREVIOUS_CHORD, forbiddenInterval)
     return chords.filter( chord => {
-        let has_parallel = interval_instances.some(interval => {
-            let is_parallel = chord[interval[1]] - chord[interval[0]] === forbidden_interval
-            if (is_parallel) {
-                console.log(`${EXAMPLE_PREVIOUS_CHORD.map(note_number_to_name)} has a parallel ${forbidden_interval}  with ${chord.map(note_number_to_name)}`)
-                console.log([EXAMPLE_PREVIOUS_CHORD[interval[0]], EXAMPLE_PREVIOUS_CHORD[interval[1]]].map(note_number_to_name), ' to ', [chord[interval[0]], chord[interval[1]]].map(note_number_to_name))
+        let hasParallel = intervalInstances.some(interval => {
+            let isParallel = chord[interval[1]] - chord[interval[0]] === forbiddenInterval
+            if (isParallel) {
+                console.log(`${EXAMPLE_PREVIOUS_CHORD.map(noteNumberToName)} has a parallel ${forbiddenInterval}  with ${chord.map(noteNumberToName)}`)
+                console.log([EXAMPLE_PREVIOUS_CHORD[interval[0]], EXAMPLE_PREVIOUS_CHORD[interval[1]]].map(noteNumberToName), ' to ', [chord[interval[0]], chord[interval[1]]].map(noteNumberToName))
                 console.log('------------')
             }
-            return is_parallel
+            return isParallel
         })
-        return !has_parallel
+        return !hasParallel
+    })
+}
+const filterDuplicateFifths = (chords, fundamental) => {
+    const STRUCTURE_INTERVAL = 7
+    return chords.filter( chord => {
+        let incidence = 0
+        chord.forEach( note => {
+            if ((note - fundamental)% 12 === STRUCTURE_INTERVAL ) { incidence += 1}
+        })
+        return incidence < 2
     })
 }
 
-chordDeposit = filter_parallel_interval_movement(12, chordDeposit)
-chordDeposit = filter_parallel_interval_movement(7, chordDeposit)
-console.log(chordDeposit.map(chord => chord.map(note_number_to_name)))
+const calculateMovement = (prevChord, chord) => {
+    let movementPartial = 0
+    for (let voiceIndex = 0; voiceIndex < chord.length; voiceIndex++) {
+        movementPartial += Math.abs(prevChord[voiceIndex] - chord[voiceIndex])
+    }
+    return movementPartial
+}
+
+chordDeposit = filterParallelIntervalMovement(12, chordDeposit)
+chordDeposit = filterParallelIntervalMovement(7, chordDeposit)
+console.log(chordDeposit.map(chord => chord.map(noteNumberToName)))
+chordDeposit = filterDuplicateFifths(chordDeposit, fundamental)
+console.log(chordDeposit.map(chord => chord.map(noteNumberToName)))
+
+const generateChordScores = (chords) => {
+    let deposit = []
+    chords.forEach( chord => {
+        let movement = calculateMovement(EXAMPLE_PREVIOUS_CHORD, chord)
+        deposit.push([movement, chord])
+    })
+    return deposit
+}
+const findMinimumScoreChord = (chordScores) => {
+    return chordScores.reduce( (partialMinChordAndScore, chordAndScore) => {
+        if (partialMinChordAndScore) {
+            if (partialMinChordAndScore[0] > chordAndScore[0] ) {
+                return chordAndScore
+            } else {
+                return partialMinChordAndScore
+            }
+        } else {
+            return chordAndScore
+        }
+    })
+}
+const sortChordsByScore = (chords) => {
+    return chords.sort((a, b) => a[0] - b[0] )
+}
+chordScores = generateChordScores(chordDeposit)
+sortedChords = sortChordsByScore(chordScores)
+console.log(sortedChords)
+
+let nextChord = findMinimumScoreChord(chordScores)[1]
+
+let byVoice = EXAMPLE_PREVIOUS_CHORD.map((e, i) => {
+    return [EXAMPLE_PREVIOUS_CHORD[i], nextChord[i]];
+})
+
+byVoiceNoteName = byVoice.map(chord => chord.map(note => note + 12 * 3).map(noteNumberToName).map( name => name + '/h'))
+console.log(byVoiceNoteName)
+const draw = () => {
+    const VF = Vex.Flow;
+
+    var vf = new VF.Factory({
+        renderer: { elementId: 'reading', width: 500, height: 400 }
+    });
+
+    var score = vf.EasyScore();
+    var system = vf.System();
+
+    system.addStave({
+        voices: [
+            score.voice(score.notes(byVoiceNoteName[3].join(', '), { stem: 'up' })),
+            score.voice(score.notes(byVoiceNoteName[2].join(', '), { stem: 'down' }))
+        ]
+    }).addClef('treble');
+    system.addStave({
+        voices: [
+            score.voice(score.notes(byVoiceNoteName[1].join(', '), { stem: 'up' })),
+            score.voice(score.notes(byVoiceNoteName[0].join(', '), { stem: 'down' }))
+        ]
+    }).addClef('bass');
+    system.addConnector()
+    vf.draw();
+
+
+}
+draw()
