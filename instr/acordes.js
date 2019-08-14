@@ -53,11 +53,10 @@ const addPressedBehaviour = (element, isKey) => {
         } else {
         }
         element.style.background = "yellow"
+        let tonicNumber = changeNotesToNumbers(fundamental) % 12
+        voices = findNextVoices(voices, tonicNumber, alteration)
     }
     if (!alteration) { alteration = 'MAJ'}
-    let tonicNumber = changeNotesToNumbers(fundamental) % 12
-    console.log(tonicNumber)
-    voices = findNextVoices(voices, tonicNumber, alteration)
     element.ontouchcancel = (ev) => {
         pressedEnd(element, isKey)
     }
