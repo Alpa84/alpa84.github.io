@@ -244,7 +244,7 @@ const filterChordsByRules = (possibleChords, filters, chordTonic, chordAlteratio
 
 const findNextVoices = (previousChord, chordTonic, chordAlteration) => {
     // we want all the chords to be in fundamental state, not inverted
-    let bassVoice = findFundamental(tonicOfChord, EXAMPLE_PREVIOUS_CHORD)
+    let bassVoice = findFundamental(chordTonic, EXAMPLE_PREVIOUS_CHORD)
     let possibleChordNotes = generatePossibleChordNotes(chordTonic, chordAlteration)
     console.log(possibleChordNotes.map(noteNumberToName))
     // since we want the chords in fundamental we already know the first chord note
@@ -279,9 +279,9 @@ const EXAMPLE_PREVIOUS_CHORD = [36, 48, 55, 64]
 
 const chordProgression = [
     // ['C', 'MAJ'],
-    ['G', 'MAJ'],
     ['A', 'min'],
-    ['C', 'MAJ'],
+    ['G', 'MAJ'],
+    ['C', 'MAJ_7'],
 ]
 const NoteToNumbers = {
     'C': 0,
@@ -308,7 +308,7 @@ const addVoicesToProgression = (chordTonic, chordAlteration) => {
     let newVoices = findNextVoices(lastVoices, chordTonic, chordAlteration)
     voiceProgresion.push(newVoices)
 }
-chordProgression.forEach( chordSignature => {
-    addVoicesToProgression(NoteToNumbers[chordSignature[0]], chordSignature[1])
-})
-drawProgression(voiceProgresion)
+// chordProgression.forEach( chordSignature => {
+//     addVoicesToProgression(NoteToNumbers[chordSignature[0]], chordSignature[1])
+// })
+// drawProgression(voiceProgresion)

@@ -24,6 +24,7 @@ let alteration
 let position
 let stringPositions
 let sliderElement = document.getElementById('slider')
+let voices = EXAMPLE_PREVIOUS_CHORD
 
 
 const createSynth = () => {
@@ -53,6 +54,10 @@ const addPressedBehaviour = (element, isKey) => {
         }
         element.style.background = "yellow"
     }
+    if (!alteration) { alteration = 'MAJ'}
+    let tonicNumber = changeNotesToNumbers(fundamental) % 12
+    console.log(tonicNumber)
+    voices = findNextVoices(voices, tonicNumber, alteration)
     element.ontouchcancel = (ev) => {
         pressedEnd(element, isKey)
     }
@@ -117,14 +122,15 @@ const positionChange = (newPosition) => {
         if (stringPosition > position && stringPosition < newPosition || stringPosition > newPosition && stringPosition < position) {
             let chordStructure
             let chordNotes
-            if (fundamental) {
-                if (alteration) {
-                    chordStructure = chordStructures[alteration]
-                } else {
-                    chordStructure = chordStructures.MAJ
-                }
-                chordNotes = Tone.Frequency(fundamental ).harmonize(chordStructure)
-            }
+            // if (fundamental) {
+            //     if (alteration) {
+            //         chordStructure = chordStructures[alteration]
+            //     } else {
+            //         chordStructure = chordStructures.MAJ
+            //     }
+            //     chordNotes = Tone.Frequency(fundamental ).harmonize(chordStructure)
+            // }
+            chordNotes = voices.map(noteNumberToName)
             let stringNote = chordNotes[index]
             synths[index].triggerAttackRelease(stringNote, NOTE_DURATION)
             console.log(stringNote)
