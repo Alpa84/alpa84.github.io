@@ -337,24 +337,27 @@ const addVoicesToProgression = (chordTonic, chordAlteration) => {
 // })
 // drawProgression(voiceProgresion)
 
-drawProgression(voiceProgresion)
+
 const addChord = () => {
     let fundamental = parseInt(document.getElementById('fundamental').value)
     let alteration = document.getElementById('alteration').value
     addVoicesToProgression(fundamental, alteration)
     drawProgression(voiceProgresion)
 }
-let alterationSelect = document.getElementById('alteration')
-for (const key in ChordStructures) {
-    var opt = document.createElement('option')
-    opt.value = key
-    opt.innerHTML = key
-    alterationSelect.appendChild(opt)
-}
-let fundamentalSelect = document.getElementById('fundamental')
-for (const key in NoteNumbers) {
-    var opt = document.createElement('option')
-    opt.value = key
-    opt.innerHTML = NoteNumbers[key]
-    fundamentalSelect.appendChild(opt)
+const init = () => {
+    drawProgression(voiceProgresion)
+    let alterationSelect = document.getElementById('alteration')
+    for (const key in ChordStructures) {
+        var opt = document.createElement('option')
+        opt.value = key
+        opt.innerHTML = key
+        alterationSelect.appendChild(opt)
+    }
+    let fundamentalSelect = document.getElementById('fundamental')
+    for (const key in NoteNumbers) {
+        var opt = document.createElement('option')
+        opt.value = key
+        opt.innerHTML = NoteNumbers[key]
+        fundamentalSelect.appendChild(opt)
+    }
 }
