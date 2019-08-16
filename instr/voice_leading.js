@@ -48,8 +48,6 @@ const noteNumberToName = (noteNumber) => {
     return `${noteName}${octave}`
 }
 
-
-
 const generatePossibleChordNotes = (chordTonic, alteration) => {
     let chordNotes = []
     let chordStructure = ChordStructures[alteration]
@@ -151,6 +149,7 @@ const filterByParallelMovements = (chords, chordTonic, chordAlteration, previous
     })
     return filtered
 }
+
 const filterParallelIntervalMovement = (chords, forbiddenInterval, previousChord) =>{
     let intervalInstances = findIntervalInstances(previousChord, forbiddenInterval)
     return chords.filter( chord => {
@@ -167,7 +166,6 @@ const filterParallelIntervalMovement = (chords, forbiddenInterval, previousChord
     })
 }
 
-
 const calculateMovement = (prevChord, chord) => {
     let movementPartial = 0
     for (let voiceIndex = 0; voiceIndex < chord.length; voiceIndex++) {
@@ -175,8 +173,6 @@ const calculateMovement = (prevChord, chord) => {
     }
     return movementPartial
 }
-
-
 
 const generateChordScores = (chords) => {
     let deposit = []
@@ -204,31 +200,62 @@ const sortChordsByScore = (chords) => {
 }
 
 const zip = rows => rows[0].map((_, c) => rows.map(row => row[c]))
-const drawProgression = (progression) => {
-    let byVoice = zip(progression)
-    byVoiceNoteName = byVoice.map(chord => chord.map(note => note).map(noteNumberToName).map(name => name + '/q'))
 
-    const VF = Vex.Flow
-    let vf = new VF.Factory({
-        renderer: { elementId: 'reading', width: 500, height: 400 }
+const groupProgressionIntoSystem = (progression) => {
+    let packed = []
+    progression.forEach( (chord, index) => {
+        if (index % 4 === 0) {
+            packed.push([])
+        }
+        packed[packed.length -1].push(chord)
     })
-
+    return packed
+}
+const drawProgression = (progression) => {
+    const VF = Vex.Flow
+    let systemWidth = 400
+    let xPosition = 0
+    document.getElementById('reading').innerHTML = ''
+    let vf = new VF.Factory({
+        renderer: { elementId: 'reading', width: 8000, height: 300 }
+    })
+    let systems = groupProgressionIntoSystem(progression)
+    systems.forEach( (system, index) => {
+        drawSystem(system, vf, xPosition, systemWidth, index)
+        xPosition += systemWidth
+    })
+}
+const drawSystem = (systemChords, vf, xPosition, systemWidth, index) => {
+    let byVoice = zip(systemChords)
+    byVoiceNoteName = byVoice.map(systemMelody => {
+        let toNotes = systemMelody.map(note => note).map(noteNumberToName).map(name => name + '/q')
+        if (toNotes.length < 4) {
+            let diff = 4 - toNotes.length
+            for (let index = 0; index < diff; index++) {
+                toNotes.push('B4/q/r')
+            }
+        }
+        return toNotes
+    })
     let score = vf.EasyScore()
-    let system = vf.System()
+    let system = vf.System({x: xPosition, width: systemWidth})
 
-    system.addStave({
+    let staveUp = system.addStave({
         voices: [
             score.voice(score.notes(byVoiceNoteName[3].join(', '), { stem: 'up' })),
             score.voice(score.notes(byVoiceNoteName[2].join(', '), { stem: 'down' }))
         ]
-    }).addClef('treble')
-    system.addStave({
+    })
+    let staveDown = system.addStave({
         voices: [
             score.voice(score.notes(byVoiceNoteName[1].join(', '), { clef: 'bass', stem: 'up' })),
             score.voice(score.notes(byVoiceNoteName[0].join(', '), { clef: 'bass', stem: 'down' }))
         ],
-    }).addClef('bass')
-    system.addConnector()
+    })
+    if (index === 0) {
+        staveUp.addClef('treble')
+        staveDown.addClef('bass')
+    }
     vf.draw()
 
 
@@ -246,29 +273,17 @@ const findNextVoices = (previousChord, chordTonic, chordAlteration) => {
     // we want all the chords to be in fundamental state, not inverted
     let bassVoice = findFundamental(chordTonic, EXAMPLE_PREVIOUS_CHORD)
     let possibleChordNotes = generatePossibleChordNotes(chordTonic, chordAlteration)
-    console.log(possibleChordNotes.map(noteNumberToName))
     // since we want the chords in fundamental we already know the first chord note
     let allPossibleChords = generateAllPossibleChords([bassVoice], possibleChordNotes)
-    console.log(allPossibleChords.map(chord => chord.map(noteNumberToName)))
     let chordDeposit =  filterChordsByRules(allPossibleChords, [
         filterWithoutChordNotes,
         filterUnwantedDuplicate,
         filterByParallelMovements,
     ], chordTonic, chordAlteration, previousChord)
-    console.log('result')
-    console.log(chordDeposit.map(chord => chord.map(noteNumberToName)))
 
     let chordScores = generateChordScores(chordDeposit)
-    // sortedChords = sortChordsByScore(chordScores)
-    // console.log(sortedChords)
-
     let nextChord = findMinimumScoreChord(chordScores)[1]
     return nextChord
-
-
-    // byVoiceNoteName = byVoice.map(chord => chord.map(note => note + 12 * 3).map(noteNumberToName).map(name => name + '/h'))
-    // console.log(byVoiceNoteName)
-    // draw()
 }
 
 const CHORD_TONIC_EXAMPLE = 7
@@ -278,10 +293,14 @@ const EXAMPLE_PREVIOUS_CHORD = [36, 48, 55, 64]
 
 
 const chordProgression = [
-    // ['C', 'MAJ'],
+    ['C', 'MAJ'],
     ['A', 'min'],
     ['G', 'MAJ'],
-    ['C', 'MAJ_7'],
+    ['C', 'MAJ'],
+    ['C', 'MAJ'],
+    ['D', 'min'],
+    ['F', 'MAJ'],
+    ['A', 'min'],
 ]
 const NoteToNumbers = {
     'C': 0,
@@ -301,10 +320,15 @@ const changeNotesToNumbers = (note) => {
     let octave = parseInt(note.substr(-1))
     return  octave * 12 + NoteToNumbers[note.substr(0, note.length - 1)]
 }
-let voiceProgresion = [EXAMPLE_PREVIOUS_CHORD]
+let voiceProgresion = []
 
 const addVoicesToProgression = (chordTonic, chordAlteration) => {
-    let lastVoices = voiceProgresion[voiceProgresion.length -1]
+    let lastVoices
+    if (voiceProgresion.length === 0 ) {
+        lastVoices = EXAMPLE_PREVIOUS_CHORD
+    } else {
+        lastVoices = voiceProgresion[voiceProgresion.length - 1]
+    }
     let newVoices = findNextVoices(lastVoices, chordTonic, chordAlteration)
     voiceProgresion.push(newVoices)
 }
@@ -312,3 +336,25 @@ const addVoicesToProgression = (chordTonic, chordAlteration) => {
 //     addVoicesToProgression(NoteToNumbers[chordSignature[0]], chordSignature[1])
 // })
 // drawProgression(voiceProgresion)
+
+drawProgression(voiceProgresion)
+const addChord = () => {
+    let fundamental = parseInt(document.getElementById('fundamental').value)
+    let alteration = document.getElementById('alteration').value
+    addVoicesToProgression(fundamental, alteration)
+    drawProgression(voiceProgresion)
+}
+let alterationSelect = document.getElementById('alteration')
+for (const key in ChordStructures) {
+    var opt = document.createElement('option')
+    opt.value = key
+    opt.innerHTML = key
+    alterationSelect.appendChild(opt)
+}
+let fundamentalSelect = document.getElementById('fundamental')
+for (const key in NoteNumbers) {
+    var opt = document.createElement('option')
+    opt.value = key
+    opt.innerHTML = NoteNumbers[key]
+    fundamentalSelect.appendChild(opt)
+}
