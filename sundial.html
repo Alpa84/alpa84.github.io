@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--
+
+      Theme: Ashley v0.6
+      Author: Jxnblk  [http://jxnblk.com]
+      For: Tumblr  [http://tumblr.com/]
+      Terms: Protected under Creative Commons. [http://creativecommons.org/licenses/by-nc/3.0/]
+
+-->
+<html lang="en">
+
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-64769241-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-64769241-2');
+    </script>
+    <meta charset="UTF-8">
+    <!-- Custom Variables -->
+    <meta name="image:Logo" content="" />
+    <meta name="text:Colophon" content="Ashley theme by Jxnblk" />
+    <meta name="text:GoogleWebFont" content="Gentium Book Basic" />
+    <title>Ale Pan's blog</title>
+    <meta name="description" content="después no digas que no te avisé">
+    <link rel="shortcut icon" href="{Favicon}">
+    <link rel="apple-touch-icon" href="{PortraitURL-128}">
+    <link rel="alternate" type="application/rss+xml" href="{RSS}">
+    <link href='http://fonts.googleapis.com/css?family=Gentium+Book+Basic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="ashley.css">
+    <meta name=viewport content='width=device-width, initial-scale=1'>
+    <!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <!-- {block:IfLogoImage}<a href="/"><img src="{image:Logo}" class="logo" /></a>{/block:IfLogoImage} -->
+        <h1><a href="/">Ale Pan's Blog</a></h1>
+        <p>Alejandro Panza | Rosario | Argentina</p>
+    </header>
+
+    <div class="content wrap">
+        <section class="posts">
+            <!-- {block:Posts} -->
+            <article class="post {PostType}">
+                <a href="{Permalink}" class="post-title">
+                    <h2>A homemade Sundial</h2>
+                </a>
+                <img src="reloj/retrato reloj.jpg" alt="retrato con reloj de sol">
+                <p>In elementary school I told a friend that every day I was woken up by a sunbeam that filtered through
+                    the window and landed right on my eyes. Of course, it was a lie. It happened only once and at that moment
+                    I felt the need to make my story more exciting. The Sun takes a different path every day. The first day of October
+                    at 9:00 am the sunbeam passed trough my bed and the first of September the sunbeam went through my bed table.
+                </p>
+                <p>Since the shadow of the window moves as the hours goes by and every day it goes trough a different path
+                    it is possible to make a clock. It is the basic principle of every sundial.</p>
+                <p>How hard could it be to make a sundial?</p>
+                <p id='continua'></p>
+                <p>There is a tool that I used many times to make interactive audovisual instalations. It is a visual
+                    programming language called <a href="https://vvvv.org/" target="_blank">Vvvv</a>. Amongst many other things
+                    it has a 'Sun' patch that takes time, latitude and longitude as inputs and it outputs the
+                    sun orientation at that moment.
+                </p>
+                <img src="reloj/sun_patch.png" alt="en proceso">
+                <p>Straight from the Wikipedia:</p>
+                <img src="reloj/Azimuth-Altitude_schematic.svg" alt="en proceso">
+                <p>Using that patch I made a model to show where the sun would be at different times.</p>
+                <p>For example this is the path the sun is going to take at March the 3rd:</p>
+                <img src="reloj/13_de_enero.png" alt="en proceso">
+                <p>Instead of showing where the sun will be at each hour of the day it is possible to show where the sun is
+                    going to be at 10:00 am of different days across the year.
+                </p>
+                <p>As months go by an infinity symbol is formed. That is the trail the sun will be doing in the sky for
+                    centuries to come.
+                </p>
+                <img src="reloj/10_00_hs.png" alt="en proceso">
+                <p>Knowing the position of both the sun and the wall I had to calculate where
+                     the shadows are going to land in the wall</p>
+                <img src="reloj/10_hs_con_sombra.png" alt="en proceso">
+                <p>The full layout of the sun in the wall</p>
+                <img src="reloj/curvas.png" alt="en proceso">
+                <p></p>
+                <p>The first of April the sun will take this path. Nore how at 12 noon the shadow is
+                     going to land on the floor</p>
+                <img src="reloj/explicaciónIngles.png" alt="en proceso">
+                <p>I sticked a little paper at the edge of the window to use it as the indicator or 'gnomon' and
+                    for some days, while I was putting the model together, I started marking the wall at
+                    the place the gnomon's fell and noting the hour and date. As I picked random moments to make the marks
+                    the end result was a constellation of points in the wall.
+                </p>
+                <p>One night once the model was finished I used a projector to transfer the sundial's layout to the
+                    wall. I inputed the time and dates of the makings to test wether the calculated points matched with
+                    the real markings. The projected constelation aligned itself with the real one in an thrilling way.
+                    Finally the two ends met. The astronomical tables that the Sun patch was based on, my own calculations
+                    and the markings on the wall finally came together.
+                </p>
+                <p>
+                <img src="reloj/proyector_v4.png" alt="en proceso">
+                <p>I replaced the paper gnomon with a translucent red paper</p>
+                <iframe src="https://player.vimeo.com/video/328659139?background=1" width="768" height="432"
+                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                <p>The areas in the 10:00 am curve that fell into the spring and fall season where
+                    ornamented with natural motifs designed and executed by <a
+                        href="https://www.instagram.com/pablolucianop/" target="_blank">Pablo Panza</a>
+                </p>
+                <img src="reloj/pablo_pan_coloreando.jpg" alt="en proceso">
+                <img src="reloj/deco_terminada.jpg" alt="en proceso">
+                <p>The finished Sundial</p>
+                <img src="reloj/infograf ingles.png" alt="infografía">
+
+                <iframe src="https://player.vimeo.com/video/351398045" width="768" height="432" frameborder="0"
+                    allow="autoplay; fullscreen" allowfullscreen></iframe>
+                <p>
+                </p>
+                <p> Later I found some sundials with a similar design like one in the
+                    <a href="https://en.wikipedia.org/wiki/Old_Town_Hall,_Munich">Old Town Hall
+                         in Munich</a>
+
+                </p>
+                <img src="reloj/torre_del_ayuntamiento_munich.jpg" alt="en proceso">
+                <p>
+                    In this case instead of dividing the curve of the hours by month they were divided by the zodiac
+                     periods
+                </p>
+                <img src="reloj/munich_sundial.jpg" alt="en proceso">
+
+                <!-- {block:Date} -->
+                <footer>
+                    <ul class="small">
+                        <li><a href="{Permalink}"
+                                title="{DayOfWeek}, {DayOfMonth} {Month} {Year}, {24Hour}:{Minutes}:{Seconds}">2019</a></li>
+                    </ul>
+                </footer>
+                <!-- {/block:Date} -->
+            </article> <!-- /post -->
+        </section> <!-- /posts -->
+    </div> <!-- /content -->
+
+    <!-- <footer class="small wrap">
+        <a href="/ask">suponeteQueEsMiEmail@gmail.com</a>
+        <p class="small">Template: <a href="http://readashley.tumblr.com/">Ashley</a></p>
+    </footer> -->
+</body>
+
+</html>
