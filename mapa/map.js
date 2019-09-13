@@ -166,21 +166,31 @@ function decode_utf8(s) {
 }
 addCircles = ({ leafletMap, position, votesOrParty, subparty, clonedSchools}) => {
     clonedSchools.map(school => {
-        let votes = getAddedVotes({
-            candidate: {
-                votesOrParty,
-                name: subparty,
-            },
-            position,
-            school
-        })
-        // let votes = getVotes({ school, position, votesOrParty, subparty})
-        let schoolTotal = totals[position][partiesOrVotes.total][school.from]
-        if (schoolTotal !== undefined && votes !== undefined) {
-            school.thisPositionVotes = votes
-            school.schoolTotal = schoolTotal
-            school.ratio = (votes / schoolTotal)
+        if (position = 'asistencia') {
+
+            if (asistencia[school.from].totalElectores !== undefined) {
+                school.thisPositionVotes = asistencia[school.from].totalElectores
+                school.schoolTotal = asistencia[school.from].totalVotantes
+                school.ratio = asistencia[school.from].asistencia
+            }
+        } else {
+
+            let votes = getAddedVotes({
+                candidate: {
+                    votesOrParty,
+                    name: subparty,
+                },
+                position,
+                school
+            })
+            let schoolTotal = totals[position][partiesOrVotes.total][school.from]
+            if (schoolTotal !== undefined && votes !== undefined) {
+                school.thisPositionVotes = votes
+                school.schoolTotal = schoolTotal
+                school.ratio = (votes / schoolTotal)
+            }
         }
+
     })
     let schoolsWithData = clonedSchools.filter( school => {
         let notUndef = school.schoolTotal !== undefined && school.thisPositionVotes !== undefined
@@ -828,6 +838,7 @@ const init = () => {
 }
 init()
 
+
 // Object.keys(totals).map(position => {
 //     Object.keys(totals[position]).map( votesOrParty => {
 //         if (totals[position][votesOrParty].count) {
@@ -865,3 +876,11 @@ function filterOutliers(someArray) {
 
     return values.filter((x) => (x >= minValue) && (x <= maxValue));
 }
+
+
+    generateMap({
+        position: 'asistencia',
+        containerId: 'asistenciaContainer',
+        scaleContainerId: 'asistenciaScaleContainer',
+
+    })
