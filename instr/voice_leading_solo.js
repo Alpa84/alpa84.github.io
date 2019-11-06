@@ -360,5 +360,45 @@ const init = () => {
         opt.innerHTML = NoteNumbers[key]
         fundamentalSelect.appendChild(opt)
     }
+
 }
 init()
+const voiceProgresionToToneEvents = () => {
+    count = 0
+    return voiceProgresion.map(chord => {
+        let event = { time: count * Tone.Time("2n"), note: chord.map(noteNumberToName), dur: '2n' }
+        count += 1
+        return event
+    })
+}
+
+
+let part
+const play = () => {
+    Tone.Transport.stop()
+    var synth = new Tone.PolySynth(4, Tone.Synth, {
+        oscillator: {
+            type: 'square',
+            spread: 40,
+            partials: [ 0.1, 1, 0, 0.5, 0.1],
+        },
+        envelope: {
+            attack: 0.01,
+            decay: 1.6,
+            sustain: 0.47,
+            release: 1.6,
+        }
+    }).toMaster()
+    progresssionForTone = voiceProgresionToToneEvents(voiceProgresion)
+
+    part = new Tone.Part(function (time, event) {
+        synth.triggerAttackRelease(event.note, event.dur, time)
+    }, progresssionForTone)
+
+    part.start(0)
+
+    part.loopEnd = voiceProgresion.length * Tone.Time("2n")
+    Tone.Transport.start()
+}
+
+
