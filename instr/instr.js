@@ -1,6 +1,6 @@
 var OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-var FIRST_OCTAVE = 3
-var LAST_OCTAVE = 6
+var FIRST_OCTAVE = 4
+var LAST_OCTAVE = 7
 const POLYPHONY = 4
 
 // defaults
@@ -121,10 +121,12 @@ function startNote(ev) {
         synthVoice.detune.value = 0
     }
     synth.triggerAttack(noteName)
-    notesMapping[noteName] = {
-        start: {
-            x: ev.targetTouches[0].clientX,
-            y: ev.targetTouches[0].clientY,
+    if (ev.targetTouches) {
+        notesMapping[noteName] = {
+            start: {
+                x: ev.targetTouches[0].clientX,
+                y: ev.targetTouches[0].clientY,
+            }
         }
     }
 }
@@ -173,7 +175,7 @@ function releaseNote(ev) {
     synth.triggerRelease(noteName)
     ev.preventDefault();
 
-    if (ev.targetTouches.length == 0) {
+    if (!ev.targetTouches || ev.targetTouches.length == 0) {
         // Restore background and border to original values
         if (ev.target.id.includes('#')) {
             ev.target.style.background = "grey";
@@ -188,9 +190,11 @@ function setKeyboardEvents() {
     for (const pitch of notes) {
         var el = document.getElementById(pitch)
         el.ontouchstart = startNote
+        el.onmousedown = startNote
         el.ontouchmove = moveNote
         el.ontouchcancel = releaseNote
         el.ontouchend = releaseNote
+        el.onmouseup = releaseNote
     }
 }
 const detuneKeys = (cents, time) => {
