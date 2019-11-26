@@ -43,23 +43,28 @@ const createSynth = () => {
 ).toMaster()
     return synthCreated
 }
+const chordTouchStart = (ev, element, isKey) => {
+    Tone.context.resume()
+    ev.preventDefault()
+    if (isKey) {
+        fundamental = element.id
+        alteration = element.dataset.alteration
+    } else {
+    }
+    element.style.background = "yellow"
+    let tonicNumber = changeNotesToNumbers(fundamental) % 12
+    voices = findNextVoices(voices, tonicNumber, alteration)
+    playEntireChord()
+}
+const chordTouchEnd = (ev, element, isKey) => {
+    pressedEnd(element, isKey)
+}
 const addPressedBehaviour = (element, isKey) => {
-    element.ontouchstart = (ev) => {
-        Tone.context.resume()
-        ev.preventDefault()
-        if (isKey) {
-            fundamental = element.id
-            alteration = element.dataset.alteration
-        } else {
-        }
-        element.style.background = "yellow"
-        let tonicNumber = changeNotesToNumbers(fundamental) % 12
-        voices = findNextVoices(voices, tonicNumber, alteration)
-    }
+    element.ontouchstart = (ev) => chordTouchStart(ev, element, isKey)
+    element.onmousedown = (ev) => chordTouchStart(ev, element, isKey)
     if (!alteration) { alteration = 'MAJ'}
-    element.ontouchcancel = (ev) => {
-        pressedEnd(element, isKey)
-    }
+    element.ontouchcancel = (ev) => chordTouchEnd(ev, element, isKey)
+    element.onmouseup = (ev) => chordTouchEnd(ev, element, isKey)
     element.ontouchend = (ev) => {
         ev.preventDefault()
         pressedEnd(element, isKey)
@@ -112,7 +117,16 @@ const generateAlterations = () => {
         document.getElementById('alterations').appendChild(el)
     })
 }
-
+const playEntireChord = () => {
+    stringPositions.forEach((stringPosition, index) => {
+        let chordStructure
+        let chordNotes
+        chordNotes = voices.map(noteNumberToName)
+        let stringNote = chordNotes[index]
+        synths[index].triggerAttackRelease(stringNote, NOTE_DURATION)
+        console.log(stringNote)
+    })
+}
 
 const positionChange = (newPosition) => {
     // document.getElementById('reading').innerHTML = newPosition
