@@ -214,7 +214,10 @@ const initialize = () => {
             }
         })
     document.getElementById('octave').addEventListener(
-        "change", (ev) => { first_octave = parseInt(ev.target.value)})
+        "change", (ev) => {
+            first_octave = parseInt(ev.target.value)
+            alert(first_octave)
+        })
 }
 
 
