@@ -3,10 +3,11 @@ let chordStructures = {
     min : [0, 3, 7, 12],
     MAJ_7 : [0, 4, 7, 10],
 }
-let NOTE_DURATION = "2n"
+let NOTE_DURATION = "1n"
 
 const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const FIRST_OCTAVE = 3
+const DEFAULT_FIRST_OCTAVE = 3
+
 const POLYPHONY = 4
 const SLIDER_RESOLUTION = 101
 
@@ -16,6 +17,7 @@ const SensorMax = 4.2
 
 // globals
 
+let first_octave = DEFAULT_FIRST_OCTAVE
 let synths = []
 // let fundamental
 let fundamental = 'A4'
@@ -25,6 +27,7 @@ let position
 let stringPositions
 let sliderElement = document.getElementById('slider')
 let voices = EXAMPLE_PREVIOUS_CHORD
+let voicesHistory = [EXAMPLE_PREVIOUS_CHORD]
 
 
 var compressor = new Tone.Compressor(-30, 3).toMaster()
@@ -62,7 +65,8 @@ const chordTouchStart = (ev, element, isKey) => {
     }
     element.style.background = "yellow"
     let tonicNumber = changeNotesToNumbers(fundamental) % 12
-    voices = findNextVoices(voices, tonicNumber, alteration)
+    voices = findNextVoices(voices, tonicNumber, alteration).map( note => note - ((4 - first_octave) * 12) )
+    voicesHistory.push(voices)
     playEntireChord()
 }
 const chordTouchEnd = (ev, element, isKey) => {
@@ -96,7 +100,6 @@ const colorKeys = (keyElement) => {
     }
 }
 
-
 const generateKeyboard = () => {
     let reversed = OCTAVE.reverse()
     ALTERATIONS.forEach((alteration, index) => {
@@ -106,8 +109,8 @@ const generateKeyboard = () => {
         document.getElementById('container').appendChild(octaveContainer)
         reversed.forEach(note => {
             let el = document.createElement('div')
-            el.innerHTML = `${note}${FIRST_OCTAVE} ${alteration}`
-            el.id = note + FIRST_OCTAVE
+            el.innerHTML = `${note}${first_octave} ${alteration}`
+            el.id = note + first_octave
             el.dataset.alteration = alteration
             colorKeys(el)
             el.className = 'key'
@@ -132,7 +135,10 @@ const playEntireChord = () => {
         let chordNotes
         chordNotes = voices.map(noteNumberToName)
         let stringNote = chordNotes[index]
-        synths[index].triggerAttackRelease(stringNote, NOTE_DURATION)
+        let previousChord = voicesHistory[voicesHistory.length - 2].map(noteNumberToName)
+        let noteToRelease = previousChord[index]
+        synths[index].triggerRelease(noteToRelease)
+        synths[index].triggerAttack(stringNote)
         console.log(stringNote)
     })
 }
@@ -176,6 +182,7 @@ const setAccel = () => {
     accelerometer.start()
 }
 
+
 const initialize = () => {
     stringPositions = []
     for (let stringIndex = 0; stringIndex < POLYPHONY; stringIndex++) {
@@ -206,16 +213,14 @@ const initialize = () => {
                 Tone.context.resume();
             }
         })
-
-    var frenchHorn = SampleLibrary.load({
-        instruments: "french-horn"
-    })
+    document.getElementById('octave').addEventListener(
+        "change", (ev) => { first_octave = parseInt(ev.target.value)})
 }
 
 
 initialize()
 Tone.Buffer.on('load', function () {
     // play instrument sound
-    frenchHorn.toMaster()
-    frenchHorn.triggerAttack("A3")
+    // frenchHorn.toMaster()
+    // frenchHorn.triggerAttack("A3")
 });
