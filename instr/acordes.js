@@ -27,6 +27,9 @@ let sliderElement = document.getElementById('slider')
 let voices = EXAMPLE_PREVIOUS_CHORD
 
 
+var compressor = new Tone.Compressor(-30, 3).toMaster()
+
+
 const createSynth = () => {
     var synthCreated = new Tone.Synth({
         oscillator: {
@@ -40,7 +43,7 @@ const createSynth = () => {
             release: 1.2,
         }
     }
-).toMaster()
+    ).connect(compressor)
     return synthCreated
 }
 const chordTouchStart = (ev, element, isKey) => {
