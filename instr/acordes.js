@@ -205,7 +205,7 @@ const initialize = () => {
         let newPosition = parseInt(sliderElement.value)
         positionChange(newPosition)
     }
-    setAccel()
+    // setAccel()
     document.getElementById('start').addEventListener(
         "mousedown", function () {
             mouse_IsDown = true;
