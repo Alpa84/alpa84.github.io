@@ -3,10 +3,10 @@ let chordStructures = {
     min : [0, 3, 7, 12],
     MAJ_7 : [0, 4, 7, 10],
 }
-let NOTE_DURATION = "4n"
+let NOTE_DURATION = "2n"
 
 const OCTAVE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const FIRST_OCTAVE = 4
+const FIRST_OCTAVE = 3
 const POLYPHONY = 4
 const SLIDER_RESOLUTION = 101
 
@@ -45,6 +45,12 @@ const createSynth = () => {
     }
     ).connect(compressor)
     return synthCreated
+}
+const createInstrument = () => {
+    var frenchHorn = SampleLibrary.load({
+        instruments: "french-horn"
+    }).connect(compressor)
+    return frenchHorn
 }
 const chordTouchStart = (ev, element, isKey) => {
     Tone.context.resume()
@@ -170,33 +176,46 @@ const setAccel = () => {
     accelerometer.start()
 }
 
-stringPositions = []
-for (let stringIndex = 0; stringIndex < POLYPHONY ; stringIndex++) {
-    let unit = SLIDER_RESOLUTION / (POLYPHONY + 2)
-    let stringPosition =   unit * stringIndex  + unit
-    stringPosition = stringPosition / 100 * 25 + 60
-    stringPositions.push(stringPosition)
-}
+const initialize = () => {
+    stringPositions = []
+    for (let stringIndex = 0; stringIndex < POLYPHONY; stringIndex++) {
+        let unit = SLIDER_RESOLUTION / (POLYPHONY + 2)
+        let stringPosition = unit * stringIndex + unit
+        stringPosition = stringPosition / 100 * 25 + 60
+        stringPositions.push(stringPosition)
+    }
 
+    // synth = new Tone.Synth().toMaster()
+    for (let index = 0; index < 4; index++) {
+        synths.push(createInstrument())
+        // synths.push(createSynth())
+    }
 
-// synth = new Tone.Synth().toMaster()
-for (let index = 0; index < 4; index++) {
-    synths.push(createSynth())
-}
+    // synths[0].triggerAttackRelease('C5', '4n')
+    generateKeyboard()
+    // generateAlterations()
+    sliderElement.oninput = () => {
+        let newPosition = parseInt(sliderElement.value)
+        positionChange(newPosition)
+    }
+    setAccel()
+    document.getElementById('start').addEventListener(
+        "mousedown", function () {
+            mouse_IsDown = true;
+            if (Tone.context.state !== 'running') {
+                Tone.context.resume();
+            }
+        })
 
-synths[0].triggerAttackRelease('C5', '4n')
-generateKeyboard()
-// generateAlterations()
-sliderElement.oninput = () => {
-    let newPosition = parseInt(sliderElement.value)
-    positionChange(newPosition)
-}
-setAccel()
-document.getElementById('start').addEventListener(
-    "mousedown", function () {
-        mouse_IsDown = true;
-        if (Tone.context.state !== 'running') {
-            Tone.context.resume();
-        }
+    var frenchHorn = SampleLibrary.load({
+        instruments: "french-horn"
     })
+}
 
+
+initialize()
+Tone.Buffer.on('load', function () {
+    // play instrument sound
+    frenchHorn.toMaster()
+    frenchHorn.triggerAttack("A3")
+});
