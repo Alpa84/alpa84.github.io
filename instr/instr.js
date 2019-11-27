@@ -80,8 +80,9 @@ const initialize = () => {
     generateKeyboard()
     notes = generateNoteList()
     // effects
-    var distortion = new Tone.Distortion(0.6)
-    tremolo = new Tone.Tremolo().start()
+    let distortion = new Tone.Distortion(0.6)
+    let tremolo = new Tone.Tremolo().start()
+    var comp = new Tone.Compressor(-30, 3)
 
     synth = new Tone.PolySynth(POLYPHONY, Tone.Synth, {
         oscillator: {
@@ -93,7 +94,7 @@ const initialize = () => {
             sustain: 0.3,
             release: 1
         }
-    }).chain( tremolo, Tone.Master)
+    }).chain( tremolo, comp, Tone.Master)
 
     setKeyboardEvents()
     setAccelerometerInfluence()
