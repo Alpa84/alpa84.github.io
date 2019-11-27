@@ -17,7 +17,7 @@ const SensorMax = 4.2
 
 // globals
 
-let first_octave = DEFAULT_FIRST_OCTAVE
+let firstOctave = DEFAULT_FIRST_OCTAVE
 let synths = []
 // let fundamental
 let fundamental = 'A4'
@@ -65,7 +65,7 @@ const chordTouchStart = (ev, element, isKey) => {
     }
     element.style.background = "yellow"
     let tonicNumber = changeNotesToNumbers(fundamental) % 12
-    voices = findNextVoices(voices, tonicNumber, alteration).map( note => note - ((4 - first_octave) * 12) )
+    voices = findNextVoices(voices, tonicNumber, alteration).map( note => note - ((4 - firstOctave) * 12) )
     voicesHistory.push(voices)
     playEntireChord()
 }
@@ -109,8 +109,8 @@ const generateKeyboard = () => {
         document.getElementById('container').appendChild(octaveContainer)
         reversed.forEach(note => {
             let el = document.createElement('div')
-            el.innerHTML = `${note}${first_octave} ${alteration}`
-            el.id = note + first_octave
+            el.innerHTML = `${note}${firstOctave} ${alteration}`
+            el.id = note + firstOctave
             el.dataset.alteration = alteration
             colorKeys(el)
             el.className = 'key'
@@ -182,7 +182,9 @@ const setAccel = () => {
     accelerometer.start()
 }
 
-
+const changeOctave = () => {
+    firstOctave =  parseInt(document.getElementById('octave').value)
+}
 const initialize = () => {
     stringPositions = []
     for (let stringIndex = 0; stringIndex < POLYPHONY; stringIndex++) {
@@ -212,11 +214,6 @@ const initialize = () => {
             if (Tone.context.state !== 'running') {
                 Tone.context.resume();
             }
-        })
-    document.getElementById('octave').addEventListener(
-        "change", (ev) => {
-            first_octave = parseInt(ev.target.value)
-            alert(first_octave)
         })
 }
 
