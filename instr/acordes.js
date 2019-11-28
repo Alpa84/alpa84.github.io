@@ -18,6 +18,7 @@ const SensorMax = 4.2
 // globals
 
 let firstOctave = DEFAULT_FIRST_OCTAVE
+let maintain = false
 let synths = []
 // let fundamental
 let fundamental = 'A4'
@@ -137,8 +138,15 @@ const playEntireChord = () => {
         let stringNote = chordNotes[index]
         let previousChord = voicesHistory[voicesHistory.length - 2].map(noteNumberToName)
         let noteToRelease = previousChord[index]
-        synths[index].triggerRelease(noteToRelease)
-        synths[index].triggerAttack(stringNote)
+        if (maintain) {
+            if (noteToRelease != stringNote) {
+                synths[index].triggerRelease(noteToRelease)
+                synths[index].triggerAttack(stringNote)
+            }
+        } else {
+            synths[index].triggerRelease(noteToRelease)
+            synths[index].triggerAttack(stringNote)
+        }
         console.log(stringNote)
     })
 }
@@ -185,6 +193,7 @@ const setAccel = () => {
 const changeOctave = () => {
     firstOctave =  parseInt(document.getElementById('octave').value)
 }
+const toggleMaintain = () => { maintain = !maintain}
 const initialize = () => {
     stringPositions = []
     for (let stringIndex = 0; stringIndex < POLYPHONY; stringIndex++) {
