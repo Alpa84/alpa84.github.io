@@ -1,45 +1,105 @@
 <!DOCTYPE html>
-<html lang=en>
-<script src=" https://unpkg.com/vexflow/releases/vexflow-min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.0.1/Tone.min.js"></script>
+<!--
+
+      Theme: Ashley v0.6
+      Author: Jxnblk  [http://jxnblk.com]
+      For: Tumblr  [http://tumblr.com/]
+      Terms: Protected under Creative Commons. [http://creativecommons.org/licenses/by-nc/3.0/]
+
+-->
+<html lang="en">
+
 <head>
-    <title>El celular como instrumento</title>
-    <meta name="viewport" content="width=device-width">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-64769241-2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-64769241-2');
+    </script>
+    <script src=" https://unpkg.com/vexflow/releases/vexflow-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.0.1/Tone.min.js"></script>
+    <meta charset="UTF-8">
+    <!-- Custom Variables -->
+    <meta name="image:Logo" content="" />
+    <meta name="text:Colophon" content="Ashley theme by Jxnblk" />
+    <meta name="text:GoogleWebFont" content="Gentium Book Basic" />
+    <title>Voice Leading</title>
+    <meta name="description" content="después no digas que no te avisé">
+    <link rel="shortcut icon" href="{Favicon}">
+    <link rel="apple-touch-icon" href="{PortraitURL-128}">
+    <link rel="alternate" type="application/rss+xml" href="{RSS}">
+    <link href='http://fonts.googleapis.com/css?family=Gentium+Book+Basic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../ashley.css">
+    <meta name=viewport content='width=device-width, initial-scale=1'>
+    <!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
     <style>
+
     </style>
 </head>
 
 <body>
-    <div id='reading'></div>
-    <button onclick="addChord()">Add chord</button>
-    <select name="" id="fundamental">
-    </select>
-    <select name="" id="alteration">
-    </select>
-    <button onclick="play()">Play</button>
-    <h3> Already in there</h3>
-    <ul>
-        <li>For now all chords are in fundamental state</li>
-        <li>Correct ranges for each voice</li>
-        <li>No crossing between voices</li>
-        <li>All chord notes present in the voices</li>
-        <li>No duplicate 3ds</li>
-        <li>No parallel 5ths or 8ths</li>
-        <li>Voices move as little as possible while observing the above rules</li>
-    </ul>
-    <h3> TBD</h3>
-    <ul>
-        <li>A playback that does not destroy your ears</li>
-        <li>Option to have chord inversions</li>
-        <li>More chord options ( dim, aug ...) </li>
-        <li>Manage dissonances</li>
-        <li>Manage direct 5ths and 8ths</li>
-        <li>Prefer contraty movements in external voices</li>
-        <li>Integration with Garage Band or Ableton Live</li>
-    </ul>
-    <br>
-    <h2> by <a href="https://alpa84.github.io/">Alejandro Panza</a></h2>
 
+    <header>
+        <!-- {block:IfLogoImage}<a href="/"><img src="{image:Logo}" class="logo" /></a>{/block:IfLogoImage} -->
+        <h1><a href="/">El Blog de Ale Pan</a></h1>
+        <p>Alejandro Panza | Rosario | Argentina</p>
+    </header>
+
+    <div class="content wrap">
+        <section class="posts">
+            <!-- {block:Posts} -->
+            <article class="post {PostType}">
+                <a href="{Permalink}" class="post-title">
+                    <h2>Voice Leading Bot</h2>
+                </a>
+
+
+                <div id='reading'></div>
+                <button onclick="addChord()">Add chord</button>
+                <select name="" id="fundamental">
+                </select>
+                <select name="" id="alteration">
+                </select>
+                <button onclick="play()">Play</button>
+                <h3> Already in there</h3>
+                <ul>
+                    <li>For now all chords are in fundamental state</li>
+                    <li>Correct ranges for each voice</li>
+                    <li>No crossing between voices</li>
+                    <li>All chord notes present in the voices</li>
+                    <li>No duplicate 3ds</li>
+                    <li>No parallel 5ths or 8ths</li>
+                    <li>Voices move as little as possible while observing the above rules</li>
+                </ul>
+                <h3> TBD</h3>
+                <ul>
+                    <li>A playback that does not destroy your ears</li>
+                    <li>Option to have chord inversions</li>
+                    <li>More chord options ( dim, aug ...) </li>
+                    <li>Manage dissonances</li>
+                    <li>Manage direct 5ths and 8ths</li>
+                    <li>Prefer contraty movements in external voices</li>
+                    <li>Integration with Garage Band or Ableton Live</li>
+                </ul>
+                <br>
+
+
+
+                <!-- {block:Date} -->
+                <!-- {/block:Date} -->
+            </article> <!-- /post -->
+        </section> <!-- /posts -->
+    </div> <!-- /content -->
+
+    <!-- <footer class="small wrap">
+        <a href="/ask">suponeteQueEsMiEmail@gmail.com</a>
+        <p class="small">Template: <a href="http://readashley.tumblr.com/">Ashley</a></p>
+    </footer> -->
     <script src='voice_leading_solo.js'></script>
 </body>
 
