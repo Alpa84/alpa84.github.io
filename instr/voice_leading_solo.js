@@ -224,6 +224,9 @@ const drawProgression = (progression) => {
         drawSystem(system, vf, xPosition, systemWidth, index)
         xPosition += systemWidth
     })
+    // if (systems.length === 0) {
+    //     drawSystem([[],[],[],[]], vf, xPosition, systemWidth, 0)
+    // }
 }
 const drawSystem = (systemChords, vf, xPosition, systemWidth, index) => {
     let byVoice = zip(systemChords)
@@ -257,7 +260,6 @@ const drawSystem = (systemChords, vf, xPosition, systemWidth, index) => {
         staveDown.addClef('bass')
     }
     vf.draw()
-
 
 }
 
@@ -332,10 +334,6 @@ const addVoicesToProgression = (chordTonic, chordAlteration) => {
     let newVoices = findNextVoices(lastVoices, chordTonic, chordAlteration)
     voiceProgresion.push(newVoices)
 }
-// chordProgression.forEach( chordSignature => {
-//     addVoicesToProgression(NoteToNumbers[chordSignature[0]], chordSignature[1])
-// })
-// drawProgression(voiceProgresion)
 
 
 const addChord = () => {

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<body>
+
+    <h1>Parallel Coordinate Plot as an interface to improve exploration of multi-dimensional datasets</h1>
+    <p>Holoviews is a great tool to visualize data. However
+        I think the exploration of multidimensional data could be improved</p>
+    <h2>Where do we have data?</h2>
+    <p>Since a heatmap plot almost saturates the screen possibilities of showing data, visualizing data in more than 3
+    dimensions in one plot is very hard, to say the least. A way to deal with this limitation is coming with a way of
+    exploring the data. That is being able to choose and see partial views of the dataset.
+    Here is the way Holoviews lets you explore a dataset with more axis than a heatmap can show</p>
+    <video src="slicer/guessing.mov"></video>
+    <p>Two axes are shown in the heatmap and the third axis moved away of the plot
+    You are shown only a 'slice' of the data, and you can choose which slice is shown by moving the slider.</p>
+    <p>How much data is there in 'z' axis? what are the possible values of the slider can take? In the current Holoviews
+    implementation you have to find out by sliding it and seeing where the slider positions itself. There are no visual
+    cues.</p>
+    <p>another way of representing this data would be a 3d plot, but opaque</p>
+    <div id="3dStructured" style="width:600px;height:250px;"></div>
+    <h2>What if the data is not in a grid?</h2>
+    <div id="3dScattered" style="width:600px;height:250px;"></div>
+    <p>To show datapoints that are not regularly spaced a Heatmap can be turned into a scatterplot with colored points. If the
+    dataset has one more dimensions than the plot can show, the slider approach does not work so well. The slider lets you
+    choose just one value. It that case the scatterplot that would come out of it would typically show only one datapoint,
+    because the datapoints are scattered in that axis too. Choosing a single value would mean seeing an infinitely thin
+    slice of the data, and if the datapoints are not evenly spaced a slice that is so thin would only include a single
+    datapoint.
+    Being able to choose a range, instead of a single value would be necessary.</p>
+    <h2>A more complete interface for producing heatmaps and scatterplots</h2>
+
+    <h2>Lines can show linear relationships, random, </h2>
+    <h2>filtering can make more clear</h2>
+    <h2>superimposing plots</h2>
+    <h2>filtering can make opaque ok</h2>
+    <h2>it is easy to get lost working with multidimentional data.
+        A PCP can be a map of where the data is, what are you seeing</h2>
+    <h2>Wiggle it</h2>
+    <h2>Lines can be overwhelming</h2>
+    <div id='slicer'></div>
+</body>
+<script src="slicer/slicer.js"></script>
+
+<link rel="stylesheet" href="slicer/slicer.css">
+
+</html>
+
+
+
+
+what is the density of data in the axis that is not visible?
+
+
+can we do more?
+
+
+
+
+
+
+
+
+
