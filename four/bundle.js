@@ -3,8 +3,7 @@ var ft = require('fourier-transform');
 var db = require('decibels');
 
 var frequency = 10;
-const MAX_READING_SIZE = 1024
-var size = 1024
+var size = Math.pow(2 , 5)
 var sampleRate = 44
 
 
@@ -34,9 +33,6 @@ function motionlistener(event) {
 
     if (r != null) {
         content += (t + '\t' + r.alpha + '\t' + r.beta + '\t' + r.gamma + '\n');
-        if (readings.length > MAX_READING_SIZE) {
-            readings.shift()
-        }
 
         readings.push([t,r.alpha, r.beta, r.gamma])
     }
@@ -58,6 +54,7 @@ function init() {
 document.addEventListener("DOMContentLoaded", function (event) {
     document.getElementById('record').addEventListener('click', init)
     document.getElementById('doPlot').addEventListener('click', refresh)
+    // refresh()
 })
 
 function save() {
@@ -76,36 +73,46 @@ function save() {
     body.appendChild(dummyLink);
 }
 
-plotData = []
 
-const refresh  = () => {
-    last_readings = readings.map( row => row[dimention])
-    var waveform = new Float32Array(size);
-    for (var i = 0; i < size; i++) {
-        waveform[i] = last_readings[i]
+
+const refresh  = (index) => {
+    // readings = gyro_data
+    dir_readings = readings.map( row => row[dimention])
+    var waveform = new Float32Array(size)
+    let plotData = []
+    let count = 0
+    for (var i = 0; i < dir_readings.length; i++) {
+
+        waveform[count] = dir_readings[i]
+        count += 1
+        if (i % size === 0) {
+            //get normalized magnitudes for frequencies from 0 to 22050 with interval 44100/1024 ≈ 43Hz
+            var spectrum = ft(waveform)
+            //convert to decibels
+            var decibels = spectrum.map((value) => db.fromGain(value))
+            plotData.push(decibels)
+            waveform = new Float32Array(size)
+            count = 0
+        }
     }
 
-    //get normalized magnitudes for frequencies from 0 to 22050 with interval 44100/1024 ≈ 43Hz
-    var spectrum = ft(waveform)
+    doPlot(plotData)
+}
 
-    //convert to decibels
-    var decibels = spectrum.map((value) => db.fromGain(value))
-    if (plotData.length > MAX_PLOT_LEN) { plotData.shift() }
-    plotData.push(spectrum)
+
+
+const doPlot = (plotData) => {
     console.log(plotData)
     var data = [
         {
             z: plotData,
             type: 'heatmap',
-            // zmin: -100,
-            // zmax: 0,
+            colorscale: 'Viridis',
         }
     ]
 
     Plotly.newPlot('plot', data);
 }
-
-
 
 },{"decibels":3,"fourier-transform":5}],2:[function(require,module,exports){
 module.exports = function gainToDecibels(value) {
