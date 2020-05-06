@@ -523,3 +523,9 @@
       line-height: 1.5;
       margin-left: 3em;
     }
+
+
+    /* #################################### custom */
+    .aboutMe {
+      color: rgba(58, 149, 230, 1)
+    }
