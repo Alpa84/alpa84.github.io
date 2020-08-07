@@ -1,14 +1,9 @@
 {
-  "main.css": "static/css/main.11f3f8aa.css",
-  "main.css.map": "static/css/main.11f3f8aa.css.map",
-  "main.js": "static/js/main.63d3d873.js",
-  "main.js.map": "static/js/main.63d3d873.js.map",
+  "main.css": "static/css/main.1eb0c6c2.css",
+  "main.js": "static/js/main.69237638.js",
   "static/media/Barlow-Bold.ttf": "static/media/Barlow-Bold.7130fdb0.ttf",
   "static/media/Barlow-Light.ttf": "static/media/Barlow-Light.865a0a17.ttf",
   "static/media/Barlow-Regular.ttf": "static/media/Barlow-Regular.2cce8c80.ttf",
   "static/media/Roboto-Bold.ttf": "static/media/Roboto-Bold.e07df86c.ttf",
-  "static/media/Roboto-Regular.ttf": "static/media/Roboto-Regular.11eabca2.ttf",
-  "static/media/chat-icon.svg": "static/media/chat-icon.e0d2b748.svg",
-  "static/media/logo-no-bg.svg": "static/media/logo-no-bg.7718b3e3.svg",
-  "static/media/notification.mp3": "static/media/notification.0d062b33.mp3"
+  "static/media/Roboto-Regular.ttf": "static/media/Roboto-Regular.11eabca2.ttf"
 }
