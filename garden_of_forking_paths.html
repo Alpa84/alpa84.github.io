@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+
+      Theme: Ashley v0.6
+      Author: Jxnblk  [http://jxnblk.com]
+      For: Tumblr  [http://tumblr.com/]
+      Terms: Protected under Creative Commons. [http://creativecommons.org/licenses/by-nc/3.0/]
+
+-->
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-64769241-2"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-64769241-2");
+    </script>
+    <meta charset="UTF-8" />
+    <!-- Custom Variables -->
+    <meta name="image:Logo" content="" />
+    <meta name="text:Colophon" content="Ashley theme by Jxnblk" />
+    <meta name="text:GoogleWebFont" content="Gentium Book Basic" />
+    <title>Ale Pan's Blog</title>
+    <meta name="description" content="después no digas que no te avisé" />
+    <link rel="shortcut icon" href="{Favicon}" />
+    <link rel="apple-touch-icon" href="{PortraitURL-128}" />
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+    <link
+      href="http://fonts.googleapis.com/css?family=Gentium+Book+Basic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="ashley.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <style></style>
+    <script src='https://cdn.plot.ly/plotly-2.18.0.min.js'></script>
+  </head>
+
+  <body>
+    <header>
+      <!-- {block:IfLogoImage}<a href="/"><img src="{image:Logo}" class="logo" /></a>{/block:IfLogoImage} -->
+      <h1><a href="/index_en.html">Ale Pan's Blog</a></h1>
+      <p>
+        <a class="aboutMe" href="/AlePan">Alejandro Panza</a> | Rosario |
+        Argentina
+      </p>
+    </header>
+
+    <div class="content wrap">
+      <section class="posts">
+        <!-- {block:Posts} -->
+        <article class="post {PostType}">
+          <a href="{Permalink}" class="post-title">
+            <h2>ChatGPT as a garden of forking paths</h2>
+          </a>
+          <!-- <img
+            src="public/calligraphy.jpeg"
+            alt="sophisticated calligraphy work"
+          /> -->
+          <!-- <p>
+            The text completion model under ChatGPT is optimized for one thing.
+            Generating the next word of a text (actually, the next
+            <a
+              href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"
+              >token</a
+            >). This process is repeated over and over and you end up with a
+            long response. The thing is that that is just a partial view of the
+            process. Every time Chatgpt has to generate the continuation of a
+            text, it generates many possible options, each one along with the
+            probability of how likely is the text to continue that way.
+          </p>
+          <h2>Branch</h2>
+          <p>
+            When ChatGPT is faced with alternatives it chooses one at the
+            expense of the others. So, a long text is actually a pruned version
+            of an vast tree.
+          </p>
+          <h2>Small Tree</h2>
+          <p>
+            The temperature parameter (that you can set using the API) is meant
+            to control what path is taken. When the temperature is set to 0, the
+            most probable path is taken at every step. When you increase the
+            temperature the model starts randomly venturing into less probable
+            paths.
+          </p>
+          <p>Take the following example</p>
+          <h2>Big tree</h2>
+          <p>
+            After some light trimming and grouping you end up with a pretty
+            explorable visualization of the many possible paths the model can
+            produce
+          </p>
+          <p>
+            ChatGPT text generation has a branching nature and sometimes, seeing
+            just a path doesn't represent it's full potential.
+          </p>
+
+          <p>
+            Curiously, this is almost an extreme version of a fictional novel
+            described by J L Borges in
+            <a href="https://en.wikipedia.org/wiki/The_Garden_of_Forking_Paths"
+              >The garden of forking paths</a
+            >
+          </p>
+          <p>
+            Stepping outside Borges superb work, here is another example, much
+            sillier, but illustrative
+          </p>
+          <p>
+            I was trying to force ChatGPT to create a surprising explanation.
+            This was the prompt: 'in short, the extremely funny and counterintuitive explanation of why the cheese is in the guitar is because'
+          </p>
+          <p>
+            Exploring the paths , I found an excellent hypothesis, hiding in the
+            branches. A musician used it a s a makeshift pluck" I don't think I
+            would have ever find that great example just by making using chatgpt
+            take random paths and producing a single stream of text.
+          </p> -->
+
+          <!-- <p>
+            The text completion model under ChatGPT is optimized for one thing.
+            Given a text, generate the word that comes next (actually, the next
+            <a
+              href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"
+              >token</a
+            >).
+          </p>
+
+          <p>
+            This process is repeated several times to produce a longer response.
+            However, this is just a limited view of the process. Every time
+            ChatGPT generates the continuation of a text, it offers several
+            options, each accompanied by a probability of how likely it is to
+            come after the current text.
+          </p>
+
+          <p>Branching Out</p>
+
+          <p>
+            When ChatGPT is presented with alternatives, it chooses one option
+            and discards the others. Hence, a long text generated by ChatGPT is
+            merely a trimmed version of a much larger tree.
+          </p>
+
+          <p>Small Tree, Big Possibilities</p>
+
+          <p>
+            The temperature parameter, which can be set via the API, is meant to control
+            which path is taken. When the temperature is set to 0, the model
+            chooses the most probable path at each step. As you increase the
+            temperature, the model starts randomly venturing into less probable paths.
+          </p>
+
+          <p>
+            For example, after some pruning and grouping, you get a visually
+            appealing representation of the many possible paths that the model
+            can generate.
+          </p>
+
+          <p>
+            ChatGPT's text generation process has a branching nature, and just
+            seeing one path doesn't do justice to its full potential. In a way,
+            this is similar to J.L. Borges's fictional novel,
+            <a href="https://en.wikipedia.org/wiki/The_Garden_of_Forking_Paths"
+              >The garden of forking paths</a
+            >.
+          </p>
+
+          <p>
+            Stepping out of Borges's brilliant work, let's look at a more
+            lighthearted example to illustrate the point. I once tried to
+            challenge ChatGPT to create a surprising explanation. The prompt I
+            gave was: "". Exploring the different paths, I found an excellent
+            hypothesis hiding in the branches: "A musician used it as a
+            makeshift pluck."
+          </p>
+
+          <p>
+            I wouldn't have stumbled upon that fantastic example if I had just
+            made ChatGPT take random paths and produce a single stream of text.
+          </p> -->
+
+          <h1>ChatGPT as a garden of forking paths</h1>
+          <p>
+            The text completion model under ChatGPT is optimized for one thing.
+            Given a text, generate the word that comes next (actually, the next
+            <a
+              href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"
+              >token</a
+            >).
+           This process is repeated several times to produce a longer response.
+            However, this is just a limited view of the process. Every time
+            ChatGPT generates the continuation of a text, it offers several
+            options, each accompanied by a probability of how likely it is to
+            come after the current text.
+          </p>
+          <!-- <div id='single' style="height:900px"></div> -->
+          <div id='single' ></div>
+          <p>
+            When ChatGPT is faced with alternatives, it chooses one at the
+            expense of the others. So, a long text is actually a pruned version
+            of a vast tree.
+          </p>
+          <div id='bigger'></div>
+          <p>
+            The temperature parameter, which can be set via the API, is meant to control
+            which path is taken. When the temperature is set to 0, the model
+            chooses the most probable path at each step. As you increase the
+            temperature, the model starts randomly venturing into less probable paths.
+          </p>
+          <p>Take the following example.</p>
+          <div id='tired' style="height:900px"></div>
+          <p>
+            After some light trimming and grouping, you end up with a pretty
+            legible visualization of the many possible paths the model can
+            produce.
+          </p>
+          <p>
+            ChatGPT's text generation has a branching nature. Sometimes seeing
+            just a path doesn't represent its full potential.
+          </p>
+          <p>
+            Curiously, this is almost an extreme version of a fictional novel
+            described by J L Borges in <a href="https://en.wikipedia.org/wiki/The_Garden_of_Forking_Paths"
+              >The garden of forking paths</a
+            >.
+          </p>
+          <p>
+            Stepping outside Borges's superb work, here is a much sillier
+            example, but it illustrates a point.
+            I was trying to force ChatGPT to create a surprising explanation.
+            This was the prompt: 'in short, the extremely funny and counterintuitive explanation of why the cheese is in the guitar is because'
+          </p>
+          <div id='myDiv' style="height:900px"></div>
+          <p>
+            Exploring the paths, I found an excellent hypothesis hiding in the
+            branches. "A musician used it as a makeshift pluck."
+            I wouldn't have ever found that great explanation just by making ChatGPT
+            take random paths and producing a single stream of text.
+          </p>
+          <footer>
+            <ul class="small">
+              <li>
+                <a
+                  href="{Permalink}"
+                  title="{DayOfWeek}, {DayOfMonth} {Month} {Year}, {24Hour}:{Minutes}:{Seconds}"
+                  >2023</a
+                >
+              </li>
+            </ul>
+          </footer>
+          <!-- {/block:Date} -->
+        </article>
+        <!-- /post -->
+      </section>
+      <!-- /posts -->
+    </div>
+    <!-- /content -->
+
+    <!-- <footer class="small wrap">
+        <a href="/ask">suponeteQueEsMiEmail@gmail.com</a>
+        <p class="small">Template: <a href="http://readashley.tumblr.com/">Ashley</a></p>
+    </footer> -->
+  <script src="./garden/data.js"></script>
+  <script src="./garden/script.js"></script>
+  </body>
+</html>
