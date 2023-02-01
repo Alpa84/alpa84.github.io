@@ -198,17 +198,16 @@
             <a
               href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"
               >token</a
-            >). This process is repeated several times to produce a longer
-            response. However, this is just a limited view of the process. Every
-            time ChatGPT generates the continuation of a text, it offers several
-            options, each accompanied by a probability of how likely it is to
-            come after the current text.
+            >). Under the hood, every time ChatGPT generates the continuation of
+            a text, it offers several options, each accompanied by a probability
+            of how likely it is to come after the current text.
           </p>
           <!-- <div id='single' style="height:900px"></div> -->
           <div id="single"></div>
           <p>
             When ChatGPT is faced with alternatives, it chooses one at the
-            expense of the others. So, a long text is actually a pruned version
+            expense of the others. This process is repeated several times to
+            produce a larger text. So, a long text is actually a pruned version
             of a vast tree.
           </p>
           <div id="bigger"></div>
@@ -222,8 +221,9 @@
           <p>Take the following example.</p>
           <div id="tired" style="height: 900px"></div>
           <p>
-            After some light trimming and grouping, you end up with a pretty
-            legible visualization of the many possible paths the model can
+            After some light trimming and grouping, you end up with a
+            <!-- pretty legible  -->
+            visualization of the many possible paths the model can
             produce.
           </p>
           <p>
