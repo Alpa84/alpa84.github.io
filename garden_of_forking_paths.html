@@ -44,7 +44,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <style></style>
-    <script src='https://cdn.plot.ly/plotly-2.18.0.min.js'></script>
+    <script src="https://cdn.plot.ly/plotly-2.18.0.min.js"></script>
   </head>
 
   <body>
@@ -198,29 +198,29 @@
             <a
               href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"
               >token</a
-            >).
-           This process is repeated several times to produce a longer response.
-            However, this is just a limited view of the process. Every time
-            ChatGPT generates the continuation of a text, it offers several
+            >). This process is repeated several times to produce a longer
+            response. However, this is just a limited view of the process. Every
+            time ChatGPT generates the continuation of a text, it offers several
             options, each accompanied by a probability of how likely it is to
             come after the current text.
           </p>
           <!-- <div id='single' style="height:900px"></div> -->
-          <div id='single' ></div>
+          <div id="single"></div>
           <p>
             When ChatGPT is faced with alternatives, it chooses one at the
             expense of the others. So, a long text is actually a pruned version
             of a vast tree.
           </p>
-          <div id='bigger'></div>
+          <div id="bigger"></div>
           <p>
-            The temperature parameter, which can be set via the API, is meant to control
-            which path is taken. When the temperature is set to 0, the model
-            chooses the most probable path at each step. As you increase the
-            temperature, the model starts randomly venturing into less probable paths.
+            The temperature parameter, which can be set via the API, is meant to
+            control which path is taken. When the temperature is set to 0, the
+            model chooses the most probable path at each step. As you increase
+            the temperature, the model starts randomly venturing into less
+            probable paths.
           </p>
           <p>Take the following example.</p>
-          <div id='tired' style="height:900px"></div>
+          <div id="tired" style="height: 900px"></div>
           <p>
             After some light trimming and grouping, you end up with a pretty
             legible visualization of the many possible paths the model can
@@ -231,24 +231,32 @@
             just a path doesn't represent its full potential.
           </p>
           <p>
-            Curiously, this is almost an extreme version of a fictional novel
-            described by J L Borges in <a href="https://en.wikipedia.org/wiki/The_Garden_of_Forking_Paths"
+            Curiously, this is almost an extreme version of the concept of a
+            fictional novel described by J L Borges in
+            <a href="https://en.wikipedia.org/wiki/The_Garden_of_Forking_Paths"
               >The garden of forking paths</a
-            >.
+            >. In the novel, Ts'ui Pei, it's imaginary author, wanted to depict
+            his interpretation of the universe: "He believed in an infinite
+            series of times, in a dizzily growing, ever spreading network of
+            diverging, converging and parallel times. This web of time - the
+            strands of which approach one another, bifurcate, intersect or
+            ignore each other through the centuries - embraces every
+            possibility."
           </p>
-          <p>
+          <!-- <p>
             Stepping outside Borges's superb work, here is a much sillier
-            example, but it illustrates a point.
-            I was trying to force ChatGPT to create a surprising explanation.
-            This was the prompt: 'in short, the extremely funny and counterintuitive explanation of why the cheese is in the guitar is because'
+            example, but it illustrates a point. I was trying to force ChatGPT
+            to create a surprising explanation. This was the prompt: 'in short,
+            the extremely funny and counterintuitive explanation of why the
+            cheese is in the guitar is because'
           </p>
-          <div id='myDiv' style="height:900px"></div>
+          <div id="myDiv" style="height: 900px"></div>
           <p>
             Exploring the paths, I found an excellent hypothesis hiding in the
-            branches. "A musician used it as a makeshift pluck."
-            I wouldn't have ever found that great explanation just by making ChatGPT
-            take random paths and producing a single stream of text.
-          </p>
+            branches. "A musician used it as a makeshift pluck." I wouldn't have
+            ever found that great explanation just by making ChatGPT take random
+            paths and producing a single stream of text.
+          </p> -->
           <footer>
             <ul class="small">
               <li>
@@ -272,7 +280,7 @@
         <a href="/ask">suponeteQueEsMiEmail@gmail.com</a>
         <p class="small">Template: <a href="http://readashley.tumblr.com/">Ashley</a></p>
     </footer> -->
-  <script src="./garden/data.js"></script>
-  <script src="./garden/script.js"></script>
+    <script src="./garden/data.js"></script>
+    <script src="./garden/script.js"></script>
   </body>
 </html>
