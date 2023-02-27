@@ -201,7 +201,17 @@
       line-height: 1.5;
       font-weight: 400;
     }
-
+    #paths {
+      color: #444;
+      background: #fff;
+      font-family: "Open Sans", verdana, arial, sans-serif;
+      font-size: 75%;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+    #paths span:first-of-type{
+      padding-left: 3px;
+    }
 
     h1,
     h2,

@@ -32,8 +32,8 @@ function random() {
     return x - Math.floor(x);
 }
 
-const paddingBig = '20px'
-const paddingSmall = '5px'
+const paddingBig = '10px'
+const paddingSmall = '4px'
 const lastPath = paths[paths.length-1]
 const lastToken = lastPath[lastPath.length-1]
 const numberOfIds = lastToken.id + 1
