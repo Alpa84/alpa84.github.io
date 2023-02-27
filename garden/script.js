@@ -3,6 +3,7 @@ var layout = {
   font: {
     size: 10,
   },
+  margin: {t:0,l:15,b:0,r:0}
 };
 
 Plotly.react("single", dataSingle, layout);
