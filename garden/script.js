@@ -1,12 +1,17 @@
+var layoutSmall = {
+  font: {
+    size: 10,
+  },
+  margin: {t:0,l:15,b:40,r:0}
+};
 var layout = {
-//   title: "Basic Sankey",
   font: {
     size: 10,
   },
   margin: {t:0,l:15,b:0,r:0}
 };
 
-Plotly.react("single", dataSingle, layout);
+Plotly.react("single", dataSingle, layoutSmall);
 
 // Plotly.react("myDiv", data, layout);
 
