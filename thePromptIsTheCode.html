@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+
+      Theme: Ashley v0.6
+      Author: Jxnblk  [http://jxnblk.com]
+      For: Tumblr  [http://tumblr.com/]
+      Terms: Protected under Creative Commons. [http://creativecommons.org/licenses/by-nc/3.0/]
+
+-->
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-64769241-2"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "UA-64769241-2");
+    </script>
+    <meta charset="UTF-8" />
+    <!-- Custom Variables -->
+    <meta name="image:Logo" content="" />
+    <meta name="text:Colophon" content="Ashley theme by Jxnblk" />
+    <meta name="text:GoogleWebFont" content="Gentium Book Basic" />
+    <title>Ale Pan's Blog</title>
+    <meta name="description" content="después no digas que no te avisé" />
+    <link rel="shortcut icon" href="{Favicon}" />
+    <link rel="apple-touch-icon" href="{PortraitURL-128}" />
+    <link rel="alternate" type="application/rss+xml" href="{RSS}" />
+    <link
+      href="http://fonts.googleapis.com/css?family=Gentium+Book+Basic"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="ashley.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <style></style>
+  </head>
+
+  <body>
+    <header>
+      <!-- {block:IfLogoImage}<a href="/"><img src="{image:Logo}" class="logo" /></a>{/block:IfLogoImage} -->
+      <h1><a href="/index_en.html">Ale Pan's Blog</a></h1>
+      <p>
+        <a class="aboutMe" href="/AlePan">Alejandro Panza</a> | Rosario |
+        Argentina
+      </p>
+    </header>
+
+    <div class="content wrap">
+      <section class="posts">
+        <!-- {block:Posts} -->
+        <article class="post {PostType}">
+          <a href="{Permalink}" class="post-title">
+            <h2>The prompt is the code</h2>
+          </a>
+          <p>
+            Reading code is harder than writing code   <span class="bolder">=></span>  Checking the generated code defeats its purpose <span class="bolder">=></span>   The prompt is the code
+          </p>
+          <footer>
+            <ul class="small">
+              <li>
+                <a
+                  href="{Permalink}"
+                  title="{DayOfWeek}, {DayOfMonth} {Month} {Year}, {24Hour}:{Minutes}:{Seconds}"
+                  >2024</a
+                >
+              </li>
+            </ul>
+          </footer>
+          <!-- {/block:Date} -->
+        </article>
+        <!-- /post -->
+      </section>
+      <!-- /posts -->
+    </div>
+    <!-- /content -->
+
+    <!-- <footer class="small wrap">
+        <a href="/ask">suponeteQueEsMiEmail@gmail.com</a>
+        <p class="small">Template: <a href="http://readashley.tumblr.com/">Ashley</a></p>
+    </footer> -->
+  </body>
+</html>
