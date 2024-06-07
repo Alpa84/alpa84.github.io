@@ -1,10 +1,16 @@
 {
-  "main.css": "static/css/main.a4174f10.css",
-  "main.js": "static/js/main.ea39749f.js",
-  "static/media/Barlow-Bold.ttf": "static/media/Barlow-Bold.7130fdb0.ttf",
-  "static/media/Barlow-Light.ttf": "static/media/Barlow-Light.865a0a17.ttf",
-  "static/media/Barlow-Regular.ttf": "static/media/Barlow-Regular.2cce8c80.ttf",
-  "static/media/Roboto-Bold.ttf": "static/media/Roboto-Bold.e07df86c.ttf",
-  "static/media/Roboto-Regular.ttf": "static/media/Roboto-Regular.11eabca2.ttf",
-  "static/media/UbuntuMono-Regular.ttf": "static/media/UbuntuMono-Regular.e097b716.ttf"
+  "files": {
+    "main.css": "/coin/static/css/main.3644236c.css",
+    "main.js": "/coin/static/js/main.7548b699.js",
+    "static/media/Roboto-Regular.ttf": "/coin/static/media/Roboto-Regular.03523cf578d69fa92322.ttf",
+    "static/media/Roboto-Bold.ttf": "/coin/static/media/Roboto-Bold.4f39c5796e60c9d8e732.ttf",
+    "static/media/Barlow-Bold.ttf": "/coin/static/media/Barlow-Bold.2dc03d2e89ef7d9e6ffb.ttf",
+    "static/media/Barlow-Regular.ttf": "/coin/static/media/Barlow-Regular.952f8963756042f7ccf5.ttf",
+    "static/media/Barlow-Light.ttf": "/coin/static/media/Barlow-Light.7e0099c5266078997e2c.ttf",
+    "index.html": "/coin/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.3644236c.css",
+    "static/js/main.7548b699.js"
+  ]
 }
