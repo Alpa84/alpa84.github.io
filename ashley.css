@@ -367,10 +367,16 @@
     }
 
     .post img,
+    .content img,
     .photoset,
     .photoset img,
     .photoset_row {
       max-width: 100%;
+    }
+
+    .post img,
+    .content img {
+      height: auto;
     }
 
     .post iframe,
