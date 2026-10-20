@@ -539,3 +539,39 @@
     .aboutMe {
       color: rgba(58, 149, 230, 1)
     }
+
+    .language-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1em;
+      margin-top: .5em;
+      font-size: 1rem;
+    }
+
+    .language-nav a,
+    .language-nav [aria-current] {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .language-nav [aria-current] {
+      font-weight: 700;
+    }
+
+    .language-nav a {
+      color: #116b9b;
+      text-decoration: underline;
+    }
+
+    .language-nav a:hover,
+    .language-nav a:focus-visible {
+      color: #0b4f73;
+      text-decoration: underline;
+    }
+
+    .language-nav a:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 3px;
+    }
