@@ -40,6 +40,14 @@
     />
     <link rel="stylesheet" href="ashley.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      .reproduction-instructions { margin: 2rem 0; padding-top: 1rem; border-top: 1px solid #ddd; }
+      .reproduction-instructions summary { cursor: pointer; font-size: 1.125rem; }
+      .reproduction-instructions h3 { margin-top: 1.5rem; font-size: 1.25rem; }
+      .reproduction-instructions li { margin-top: 1rem; }
+      .reproduction-instructions pre { padding: 1rem; background: #f4f4f4; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
+      .reproduction-instructions .equation { margin: 1rem 0; overflow-wrap: anywhere; }
+    </style>
   </head>
 
   <body>
@@ -87,6 +95,43 @@
               <li><a href="/ai_originality.html">Can an AI like ChatGPT produce original content?</a></li>
             </ul>
           </nav>
+          <details class="reproduction-instructions">
+            <summary>Reproduction instructions, AI generated</summary>
+            <h3>Reproducing the interpolation experiment</h3>
+            <p>Use <strong>Qwen2.5-7B-Instruct</strong>, the larger model used in the consistency experiments. The recorded configuration used NF4 double quantization for dense layers, float16 computation, and float32 embeddings and unquantized modules.</p>
+            <ol>
+              <li>
+                <p><strong>Construct continuous inputs.</strong> Extract the model’s 3,584-dimensional input embeddings for the single, unprefixed tokens <code>lion</code> and <code>snake</code>. Interpolate without normalization:</p>
+                <div class="equation" role="math" aria-label="v of t equals one minus t times e lion plus t times e snake, for t in the interval zero to one">
+                  <i>v</i>(<i>t</i>) = (1 − <i>t</i>)<i>e</i><sub>lion</sub> + <i>t</i> <i>e</i><sub>snake</sub>, &nbsp; <i>t</i> ∈ [0, 1].
+                </div>
+                <p>Apply the standard chat template, embed the prompt, and replace the subject token’s embedding with <i>v</i>(<i>t</i>). Supply the resulting sequence through <code>inputs_embeds</code>. Keep model weights fixed.</p>
+              </li>
+              <li>
+                <p><strong>Locate the blend region.</strong> Do not assume that <i>t</i> = 0.5 produces a hybrid. Sweep the interval in steps of 0.1, then refine regions where physical-feature answers change or combine endpoint traits. In this experiment, the midpoint was lion-like; mixed readouts appeared around <strong><i>t</i> = 0.542–0.545</strong>. This location may change with the model, precision, or prompt.</p>
+              </li>
+              <li>
+                <p><strong>Generate unnamed descriptions.</strong> Use a fresh context and cache for every trial. Example user prompt:</p>
+                <pre><code>Describe the subject's physical appearance in three short sentences.
+Do not give its name, species, taxonomic category, or an identifying
+comparison. Start directly with physical details. Do not explain
+these instructions. Keep the entire answer within forty words.
+Subject:
+[injected vector]</code></pre>
+                <p>Use unrestricted greedy decoding (<code>do_sample=False</code>, <code>repetition_penalty=1.0</code>) with a 128-token cap. Do not tell the model the endpoint names, interpolation coefficient, or intended hybrid interpretation. Record naming violations and truncated answers separately.</p>
+              </li>
+              <li>
+                <p><strong>Check features across wordings.</strong> Probe scales, limbs, fur, four legs, external ears, claws, tail, and wings using:</p>
+                <pre><code>[injected vector] has scales.
+Is the statement true? Answer only Yes or No.
+Do not give the subject's name.</code></pre>
+                <p>Include affirmative and negative variants. Validate each wording on both ordinary endpoints before interpreting the blend; normalize negative statements when comparing answers.</p>
+              </li>
+            </ol>
+            <p>The saved search found reproducible mixed feature readouts near 54.2–54.5% snake, but <strong>not a fully consistent anatomy</strong>. Compare otherwise identical description prompts with and without the no-naming instruction to evaluate its effect.</p>
+            <h3>Testing competition between names</h3>
+            <p>Capture the final hidden state entering <code>lm_head</code> and its full-vocabulary logits immediately before an animal-name token is selected. Apply softmax over the entire vocabulary and report both endpoint-name probabilities. This measures competition before discrete selection. The previously observed <strong>59.23% snake / 40.42% lion</strong> result came from a separate <strong>Gemma 3 1B</strong> experiment; it should not be presented as a Qwen result.</p>
+          </details>
         </article>
       </section>
     </div>
