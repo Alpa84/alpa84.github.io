@@ -43,6 +43,13 @@
     <style>
       .reproduction-instructions { margin: 2rem 0; padding-top: 1rem; border-top: 1px solid #ddd; }
       .reproduction-instructions summary { cursor: pointer; font-size: 1.125rem; }
+      .reproduction-instructions summary::-webkit-details-marker { display: none; }
+      .disclosure-triangle { display: inline-block; margin-right: .5rem; font-size: .75em; }
+      .reproduction-instructions[open] .disclosure-triangle { transform: rotate(90deg); }
+      .post .creature-description { margin: 1.5rem 0; padding-left: 1.25rem; border-left: 3px solid #1592d1; font-style: italic; }
+      .more-creatures { margin: 2rem 0; }
+      .more-creatures h3 { font-size: 1.5rem; }
+      .more-creatures figure { margin: 1.5rem 0; }
       .reproduction-instructions h3 { margin-top: 1.5rem; font-size: 1.25rem; }
       .reproduction-instructions li { margin-top: 1rem; }
       .reproduction-instructions pre { padding: 1rem; background: #f4f4f4; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
@@ -67,7 +74,7 @@
           </a>
           <p class="post-meta"><time datetime="2026-11-25">25 November 2026</time></p>
           <p>
-            You don’t have to pass tokens to LLMs. You can use vectors directly! Talking to the model using vectors lets you explore the vast and continuous embedding space. So, what creature can we find in the middle ground between a lion and a snake? LLMs will describe a “scaled creature with powerful limbs.”
+            Instead of passing tokens to LLMs you can directly sent it vectors Talking to the model using vectors lets you explore the vast and continuous embedding space.
           </p>
           <p>
             <img src="public/chasing_creatures_in_the_embedding_space.jpg" alt="Hand-drawn diagram showing a vector between lion and snake embeddings passed to an LLM, producing a scaled animal with powerful limbs." width="1098" height="1280" loading="eager">
@@ -82,11 +89,15 @@
             Interestingly, the blending of features stays consistent when you change the wording asking about different traits.
           </p>
           <figure style="margin-top: 1em;">
-            <img src="public/chasing_creatures_lion_snake.jpg" alt="A fantastical creature with fur, scales, powerful limbs, a forked tongue, and a long reptilian tail." width="1280" height="655" loading="lazy">
-            <figcaption class="small">This is an artist’s interpretation of the creature as described by the model</figcaption>
+            <img src="public/chasing_creatures_lion_snake.jpg" alt="A lion–snake blend with tawny fur, a scaled underside, an elongated snout, a forked tongue, clawed limbs, and a tufted tail." width="1280" height="853" loading="lazy">
+            <figcaption class="small">This is an image model’s interpretation of the creature as described by the model</figcaption>
           </figure>
+          <p>The lion - snake blend produced this description:</p>
+          <blockquote class="creature-description">
+            <p>The tawny fur of the creature blends seamlessly with the surroundings, providing camouflage in its natural habitat. Beneath the coat, scales line the underside of the body, a vestige of its evolutionary past. The elongated snout, equipped with a forked tongue, is a tool for both taste and touch, aiding in the detection of prey. From the snout, two visible external ears protrude, catching the slightest sounds. Powerful claws, retractable yet sharp, anchor the creature to the ground, ready for a swift pounce. A thick, muscular tail, tipped with a tuft of fur, swishes from side to side, balancing the body as the creature moves. Wings, though absent, do not hinder its agility; instead, they suggest a more terrestrial lifestyle, with four sturdy limbs ending in sharp claws, capable of both climbing and digging.</p>
+          </blockquote>
           <p>
-            As far as I know, the idea of asking the model to describe the creature without naming it to avoid “meaning collapse” is new, and it could be useful when using <a href="https://arxiv.org/abs/2401.06102">Patchscopes</a>.
+            The idea of asking the model to describe the creature without naming it to avoid “meaning collapse” could be a nice trick to do when using <a href="https://arxiv.org/abs/2401.06102">Patchscopes</a>.
           </p>
           <nav class="related-posts" aria-label="Read next">
             <h3>Read next</h3>
@@ -96,7 +107,7 @@
             </ul>
           </nav>
           <details class="reproduction-instructions">
-            <summary>Reproduction instructions, AI generated</summary>
+            <summary><span class="disclosure-triangle" aria-hidden="true">&#9654;</span>Reproduction instructions, AI generated</summary>
             <h3>Reproducing the interpolation experiment</h3>
             <p>Use <strong>Qwen2.5-7B-Instruct</strong>, the larger model used in the consistency experiments. The recorded configuration used NF4 double quantization for dense layers, float16 computation, and float32 embeddings and unquantized modules.</p>
             <ol>
@@ -130,8 +141,24 @@ Do not give the subject's name.</code></pre>
             </ol>
             <p>The saved search found reproducible mixed feature readouts near 54.2–54.5% snake, but <strong>not a fully consistent anatomy</strong>. Compare otherwise identical description prompts with and without the no-naming instruction to evaluate its effect.</p>
             <h3>Testing competition between names</h3>
-            <p>Capture the final hidden state entering <code>lm_head</code> and its full-vocabulary logits immediately before an animal-name token is selected. Apply softmax over the entire vocabulary and report both endpoint-name probabilities. This measures competition before discrete selection. The previously observed <strong>59.23% snake / 40.42% lion</strong> result came from a separate <strong>Gemma 3 1B</strong> experiment; it should not be presented as a Qwen result.</p>
+            <p>Capture the final hidden state entering <code>lm_head</code> and its full-vocabulary logits immediately before an animal-name token is selected. Apply softmax over the entire vocabulary and report both endpoint-name probabilities. This measures competition before discrete selection. The previously observed <strong>59.23% snake / 40.42% lion</strong> result came from a separate <strong>Gemma 3 1B</strong> experiment; not a Qwen result.</p>
           </details>
+          <section class="more-creatures" aria-labelledby="more-creatures-heading">
+            <h3 id="more-creatures-heading">Want to see more creatures?</h3>
+            <p>Here are:</p>
+            <figure>
+              <img src="public/chasing_creatures_roach_monkey.jpg" alt="An image model’s interpretation of a roach - monkey blend, with fur, large eyes, antennae, an armored back, and a long tail." width="1280" height="853" loading="lazy">
+              <figcaption class="small">Roach - monkey</figcaption>
+            </figure>
+            <figure>
+              <img src="public/chasing_creatures_snake_bee.jpg" alt="An image model’s interpretation of a snake - bee blend, with a striped serpentine body, insect wings, antennae, and a forked tongue." width="1280" height="853" loading="lazy">
+              <figcaption class="small">Snake - bee</figcaption>
+            </figure>
+            <figure>
+              <img src="public/chasing_creatures_human_bird.jpg" alt="An image model’s interpretation of a human - bird blend, with a beak, sparse hair, feathers, small hands, and two sturdy legs." width="1280" height="853" loading="lazy">
+              <figcaption class="small">Human - bird</figcaption>
+            </figure>
+          </section>
         </article>
       </section>
     </div>
