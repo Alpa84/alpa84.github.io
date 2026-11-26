@@ -46,8 +46,8 @@
       .reproduction-instructions[open] summary { padding-bottom: .75rem; margin-bottom: 1rem; border-bottom: 1px solid #ddd; }
       .reproduction-instructions summary:focus-visible { outline: 2px solid #116b9b; outline-offset: 3px; }
       .reproduction-instructions summary::-webkit-details-marker { display: none; }
-      .disclosure-triangle { display: inline-block; margin-right: .5rem; font-size: .75em; }
-      .reproduction-instructions[open] .disclosure-triangle { transform: rotate(90deg); }
+      .disclosure-chevron { display: inline-block; width: .375em; height: .375em; margin-right: .75rem; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(-45deg); vertical-align: .1em; }
+      .reproduction-instructions[open] .disclosure-chevron { transform: rotate(45deg); }
       .post .creature-description { margin: 1.5rem 0; padding-left: 1.25rem; border-left: 3px solid #1592d1; font-style: italic; color: #666; }
       .more-creatures { margin: 2rem 0; }
       .more-creatures h3 { font-size: 1.5rem; }
@@ -76,7 +76,7 @@
           </a>
           <p class="post-meta"><time datetime="2026-11-25">25 November 2026</time></p>
           <p>
-            Instead of passing tokens to LLMs you can directly sent it vectors Talking to the model using vectors lets you explore the vast and continuous embedding space.
+            Instead of passing tokens to LLMs, you can send them vectors directly. Talking to the model using vectors lets you explore the vast and continuous embedding space.
           </p>
           <p>
             <img src="public/chasing_creatures_in_the_embedding_space.jpg" alt="Hand-drawn diagram showing a vector between lion and snake embeddings passed to an LLM, producing a scaled animal with powerful limbs." width="1098" height="1280" loading="eager">
@@ -88,7 +88,7 @@
             It turns out that when the model describes the creature, it will name it. The output vector for the name will be roughly halfway between snake and lion. When that vector gets projected to a token, the model will choose the closest token, either “lion” or “snake.” From that point on, the ambiguity between “lion” and “snake” will collapse to whatever token it chose, and you will get the description of a perfectly normal animal. You can avoid that collapse by asking the model to not name the creature, and you will get a description of a fantastical animal that only exists in the crazy embedding space.
           </p>
           <p>
-            Interestingly, the blending of features stays consistent when you change the wording asking about different traits.
+            Interestingly, you can find creatures with some consistent feature blending, that survive paraphrasing or negative questioning
           </p>
           <figure style="margin-top: 1em;">
             <img src="public/chasing_creatures_lion_snake.jpg" alt="A lion–snake blend with tawny fur, a scaled underside, an elongated snout, a forked tongue, clawed limbs, and a tufted tail." width="1280" height="853" loading="lazy">
@@ -103,7 +103,7 @@
             A very relevant 2025 paper: <a href="https://arxiv.org/abs/2504.03933">Language Models Are Implicitly Continuous</a>.
           </p>
           <details class="reproduction-instructions">
-            <summary><span class="disclosure-triangle" aria-hidden="true">&#9654;</span>Reproduction instructions, AI generated</summary>
+            <summary><span class="disclosure-chevron" aria-hidden="true"></span>Reproduction instructions, AI generated</summary>
             <h3>Reproducing the interpolation experiment</h3>
             <p>Use <strong>Qwen2.5-7B-Instruct</strong>, the larger model used in the consistency experiments. The recorded configuration used NF4 double quantization for dense layers, float16 computation, and float32 embeddings and unquantized modules.</p>
             <ol>
