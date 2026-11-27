@@ -51,7 +51,6 @@
       .post .creature-description { margin: 1.5rem 0; padding-left: 1.25rem; border-left: 3px solid #1592d1; font-style: italic; color: #666; }
       .more-creatures { margin: 2rem 0; }
       .more-creatures h3 { font-size: 1.5rem; }
-      .more-creatures figure { margin: 1.5rem 0; }
       .reproduction-instructions h3 { margin-top: 1.5rem; font-size: 1.25rem; }
       .reproduction-instructions li { margin-top: 1rem; }
       .reproduction-instructions pre { padding: 1rem; background: #fff; border: 1px solid #ddd; border-radius: .25em; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1rem; }
@@ -100,6 +99,8 @@
           </blockquote>
           <p>
             The idea of asking the model to describe the creature without naming it to avoid “meaning collapse” could be a nice trick to do when using <a href="https://arxiv.org/abs/2401.06102">Patchscopes</a>.
+          </p>
+          <p>
             A very relevant 2025 paper: <a href="https://arxiv.org/abs/2504.03933">Language Models Are Implicitly Continuous</a>.
           </p>
           <details class="reproduction-instructions">
@@ -140,20 +141,20 @@ Do not give the subject's name.</code></pre>
             <p>Capture the final hidden state entering <code>lm_head</code> and its full-vocabulary logits immediately before an animal-name token is selected. Apply softmax over the entire vocabulary and report both endpoint-name probabilities. This measures competition before discrete selection. The previously observed <strong>59.23% snake / 40.42% lion</strong> result came from a separate <strong>Gemma 3 1B</strong> experiment; not a Qwen result.</p>
           </details>
           <section class="more-creatures" aria-labelledby="more-creatures-heading">
-            <h3 id="more-creatures-heading">Want to see more creatures?</h3>
-            <p>Here are:</p>
-            <figure>
-              <img src="public/chasing_creatures_roach_monkey.jpg" alt="An image model’s interpretation of a roach - monkey blend, with fur, large eyes, antennae, an armored back, and a long tail." width="1280" height="853" loading="lazy">
-              <figcaption class="small">Roach - monkey</figcaption>
-            </figure>
-            <figure>
-              <img src="public/chasing_creatures_snake_bee.jpg" alt="An image model’s interpretation of a snake - bee blend, with a striped serpentine body, insect wings, antennae, and a forked tongue." width="1280" height="853" loading="lazy">
-              <figcaption class="small">Snake - bee</figcaption>
-            </figure>
-            <figure>
-              <img src="public/chasing_creatures_human_bird.jpg" alt="An image model’s interpretation of a human - bird blend, with a beak, sparse hair, feathers, small hands, and two sturdy legs." width="1280" height="853" loading="lazy">
-              <figcaption class="small">Human - bird</figcaption>
-            </figure>
+            <h3 id="more-creatures-heading">Curious for more creatures?</h3>
+            <p>Here are a few:</p>
+            <p><strong>47% bull / 53% owl</strong></p>
+            <blockquote class="creature-description">
+              <p>Its body is robust and muscular, covered in dense, short hair ranging from brown to golden. The head is large with piercing black eyes and a prominent, curved horn. Thick, powerful legs support a broad chest, and the tail is absent. Wide, feathered wings extend from the back, though they are not used for flight.</p>
+            </blockquote>
+            <p><strong>52% roach / 48% monkey</strong></p>
+            <blockquote class="creature-description">
+              <p>Its body is slender and elongated, covered in a smooth, dark brown fur. The head is triangular with large, protruding eyes and two long, black antennae. Four long, thin legs with five segmented toes each end in sharp claws, and a long, scuttling tail with alternating light and dark bands.</p>
+            </blockquote>
+            <p><strong>49% turtle / 51% rabbit</strong></p>
+            <blockquote class="creature-description">
+              <p>Its body is compact and covered in a hard, protective shell with a pattern of brown and black stripes. The head features two large, round ears and a small, pointed nose. Four short, sturdy legs support the body, ending in small, clawed feet. A short, blunt tail is barely visible.</p>
+            </blockquote>
           </section>
           <nav class="related-posts" aria-label="Read next">
             <h3>Read next</h3>
